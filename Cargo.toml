@@ -1,7 +1,21 @@
 [package]
-name = "aether-primitives"
+name = "aether_primitives"
 version = "0.1.0"
 authors = ["Felix Girke <razorheadeffect@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+# these are unspecified so whoever wants to use it can specify their 
+# own versio number as cargo will prefer to use that version
+num-traits = ">=0.0.0"
+num-complex = ">=0.0.0"
+
+[dev-dependencies]
+criterion = "0.2"
+
+
+[features]
+default = []
+
+fft = []
+
