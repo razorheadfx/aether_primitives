@@ -300,7 +300,11 @@ mod test{
 
     #[test]
     fn vec_ergonomics(){
-        unimplemented!()
+        let mut v = vec![cf32::new(2.0,2.0); 100];
+        let v2= v.clone();
+        let ones = vec![cf32::new(1.0,1.0); 100];
+
+        v.vec_div(&v2).vec_mul(&v2).vec_scale(0.5).vec_add(&ones).vec_sub(&v2).vec_mirror().vec_conj();
     }
 
     #[test]
@@ -320,12 +324,19 @@ mod test{
 
     #[test]
     fn vec_add(){
-        unimplemented!()
+        let ones = vec![cf32::new(1.0,1.0); 100];
+        let twos = vec![cf32::new(2.0,2.0); 100];
+        let mut v = vec![cf32::new(1.0,1.0); 100];
+        v.vec_add(&ones);
+        assert_evm!(v, twos,-80.0);
     }
 
     #[test]
     fn vec_sub(){
-        unimplemented!()
+        let mut v = vec![cf32::new(2.0,2.0); 100];
+        let ones = vec![cf32::new(1.0,1.0); 100];
+        v.vec_sub(&ones);
+        assert_evm!(v, ones,-80.0);
     }
 
     #[test]
