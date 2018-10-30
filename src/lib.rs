@@ -29,22 +29,26 @@ macro_rules! assert_evm {
     };
 }
 
-
 pub mod vecops;
 
 #[cfg(test)]
 mod test {
-
-    #[test]
-    fn it_works() {
-        assert_eq!(1 + 1, 2);
-    }
-
     use super::cf32;
+    
     #[test]
     fn evm_correct() {
-        let refr = vec![cf32::new(1f32,0f32), cf32::new(1f32,0f32), cf32::new(1f32,0f32), cf32::new(1f32,0f32)];
-        let act = vec![cf32::new(1f32,0f32), cf32::new(1f32,0f32), cf32::new(1f32,0f32), cf32::new(0.9f32,0f32)];
+        let refr = vec![
+            cf32::new(1f32, 0f32),
+            cf32::new(1f32, 0f32),
+            cf32::new(1f32, 0f32),
+            cf32::new(1f32, 0f32),
+        ];
+        let act = vec![
+            cf32::new(1f32, 0f32),
+            cf32::new(1f32, 0f32),
+            cf32::new(1f32, 0f32),
+            cf32::new(0.9f32, 0f32),
+        ];
         // error should be <= 0.1
         assert_evm!(act, refr, (-10.0));
     }
@@ -52,11 +56,20 @@ mod test {
     #[test]
     #[should_panic]
     fn evm_fail() {
-        let refr = vec![cf32::new(1f32,0f32), cf32::new(1f32,0f32), cf32::new(1f32,0f32), cf32::new(1f32,0f32)];
-        let act = vec![cf32::new(1f32,0f32), cf32::new(1f32,0f32), cf32::new(1f32,0f32), cf32::new(0.9f32,0f32)];
+        let refr = vec![
+            cf32::new(1f32, 0f32),
+            cf32::new(1f32, 0f32),
+            cf32::new(1f32, 0f32),
+            cf32::new(1f32, 0f32),
+        ];
+        let act = vec![
+            cf32::new(1f32, 0f32),
+            cf32::new(1f32, 0f32),
+            cf32::new(1f32, 0f32),
+            cf32::new(0.9f32, 0f32),
+        ];
         // error should be <= 0.0
         assert_evm!(act, refr, (0.0));
     }
 
 }
-

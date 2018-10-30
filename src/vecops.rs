@@ -1,4 +1,5 @@
 use super::cf32;
+use std::cmp;
 
 #[cfg(feature = "fft")]
 use super::fft::Fft;
@@ -7,7 +8,6 @@ use super::fft::Fft;
 /// They are not necessarily the most performant way of doing things
 /// especially the fft operations are not meant for time/allocation critical situations
 pub trait VecOps {
-    
     /// scale this this vector with the given f32
     fn vec_scale(&mut self, scale: f32) -> &mut Self;
 
@@ -74,8 +74,10 @@ macro_rules! impl_vec_ops {
                     "Vectors must have same length"
                 );
 
-                self.iter_mut()
-                    .zip(other.as_ref().iter())
+                let min = cmp::min(self.len(), other.as_ref().len());
+                self[..min]
+                    .iter_mut()
+                    .zip(other.as_ref()[..min].iter())
                     .for_each(|(a, b)| *a = *a * b);
                 self
             }
@@ -94,8 +96,7 @@ macro_rules! impl_vec_ops {
             }
 
             fn vec_conj(&mut self) -> &mut Self {
-                self.iter_mut()
-                    .for_each(|a| *a = a.conj());
+                self.iter_mut().for_each(|a| *a = a.conj());
                 self
             }
 
@@ -111,7 +112,7 @@ macro_rules! impl_vec_ops {
                 self
             }
 
-            fn vec_sub(&mut self, other: impl AsRef<[cf32]>) -> &mut Self{
+            fn vec_sub(&mut self, other: impl AsRef<[cf32]>) -> &mut Self {
                 assert_eq!(
                     self.len(),
                     other.as_ref().len(),
@@ -186,8 +187,10 @@ macro_rules! impl_vec_ops {
                     "Vectors must have same length"
                 );
 
-                self.iter_mut()
-                    .zip(other.as_ref().iter())
+                let min = cmp::min(self.len(), other.as_ref().len());
+                self[..min]
+                    .iter_mut()
+                    .zip(other.as_ref()[..min].iter())
                     .for_each(|(a, b)| *a = *a * b);
                 self
             }
@@ -206,8 +209,7 @@ macro_rules! impl_vec_ops {
             }
 
             fn vec_conj(&mut self) -> &mut Self {
-                self.iter_mut()
-                    .for_each(|a| *a = a.conj());
+                self.iter_mut().for_each(|a| *a = a.conj());
                 self
             }
 
@@ -223,7 +225,7 @@ macro_rules! impl_vec_ops {
                 self
             }
 
-            fn vec_sub(&mut self, other: impl AsRef<[cf32]>) -> &mut Self{
+            fn vec_sub(&mut self, other: impl AsRef<[cf32]>) -> &mut Self {
                 assert_eq!(
                     self.len(),
                     other.as_ref().len(),
@@ -292,95 +294,99 @@ macro_rules! impl_vec_ops {
 impl_vec_ops!([cf32]);
 impl_vec_ops!(Vec<cf32>);
 
-
 #[cfg(test)]
-mod test{
+mod test {
     use super::cf32;
     use super::VecOps;
 
     #[test]
-    fn vec_ergonomics(){
-        let mut v = vec![cf32::new(2.0,2.0); 100];
-        let v2= v.clone();
-        let ones = vec![cf32::new(1.0,1.0); 100];
+    fn vec_ergonomics() {
+        let mut v = vec![cf32::new(2.0, 2.0); 100];
+        let v2 = v.clone();
+        let ones = vec![cf32::new(1.0, 1.0); 100];
 
-        v.vec_div(&v2).vec_mul(&v2).vec_scale(0.5).vec_add(&ones).vec_sub(&v2).vec_mirror().vec_conj();
+        v.vec_div(&v2)
+            .vec_mul(&v2)
+            .vec_scale(0.5)
+            .vec_add(&ones)
+            .vec_sub(&v2)
+            .vec_mirror()
+            .vec_conj();
     }
 
     #[test]
-    fn vec_mul(){
+    fn vec_mul() {
         unimplemented!()
     }
 
     #[test]
-    fn vec_div(){
+    fn vec_div() {
         unimplemented!()
     }
 
     #[test]
-    fn vec_conj(){
+    fn vec_conj() {
         unimplemented!()
     }
 
     #[test]
-    fn vec_add(){
-        let ones = vec![cf32::new(1.0,1.0); 100];
-        let twos = vec![cf32::new(2.0,2.0); 100];
-        let mut v = vec![cf32::new(1.0,1.0); 100];
+    fn vec_add() {
+        let ones = vec![cf32::new(1.0, 1.0); 100];
+        let twos = vec![cf32::new(2.0, 2.0); 100];
+        let mut v = vec![cf32::new(1.0, 1.0); 100];
         v.vec_add(&ones);
-        assert_evm!(v, twos,-80.0);
+        assert_evm!(v, twos, -80.0);
     }
 
     #[test]
-    fn vec_sub(){
-        let mut v = vec![cf32::new(2.0,2.0); 100];
-        let ones = vec![cf32::new(1.0,1.0); 100];
+    fn vec_sub() {
+        let mut v = vec![cf32::new(2.0, 2.0); 100];
+        let ones = vec![cf32::new(1.0, 1.0); 100];
         v.vec_sub(&ones);
-        assert_evm!(v, ones,-80.0);
+        assert_evm!(v, ones, -80.0);
     }
 
     #[test]
-    fn vec_mirror(){
+    fn vec_mirror() {
         unimplemented!()
     }
 
     #[test]
-    fn vec_clone(){
+    fn vec_clone() {
         unimplemented!()
     }
 
     #[test]
-    fn vec_zero(){
-        unimplemented!()
-    }
-
-
-    #[test]
-    fn vec_mutate(){
+    fn vec_zero() {
         unimplemented!()
     }
 
     #[test]
-    #[cfg(feature = "fft")]
-    fn vec_fft(){
+    fn vec_mutate() {
         unimplemented!()
     }
 
     #[test]
     #[cfg(feature = "fft")]
-    fn vec_ifft(){
+    fn vec_fft() {
         unimplemented!()
     }
 
     #[test]
     #[cfg(feature = "fft")]
-    fn vec_rfft(){
+    fn vec_ifft() {
         unimplemented!()
     }
 
     #[test]
     #[cfg(feature = "fft")]
-    fn vec_rifft(){
+    fn vec_rfft() {
+        unimplemented!()
+    }
+
+    #[test]
+    #[cfg(feature = "fft")]
+    fn vec_rifft() {
         unimplemented!()
     }
 
