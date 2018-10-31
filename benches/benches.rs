@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate criterion;
 
-use aether_primitives::cf32;
+use aether_primitives::{cf32, sampling};
 use aether_primitives::vecops::VecOps;
 use criterion::Criterion;
 
@@ -37,6 +37,22 @@ fn clone(c: &mut Criterion) {
     });
 }
 
+fn interpolate_1024_4(c: &mut Criterion) {
+    c.bench_function("sampling::interpolate", |b| {
+        b.iter_with_setup(
+            || {
+                let src = (0..1024).map(|i|cf32::new(i as f32, 0.0)).collect::<Vec<_>>();
+                let dst = vec![cf32::default(); 2048];
+                (src, dst)
+            },
+            |(src, mut dst)| {
+                sampling::interpolate(&src, &mut dst, 4);
+            },
+        );
+    });
+}
 
-criterion_group!(benches, mul, clone);
-criterion_main!(benches);
+
+criterion_group!(vecops, mul, clone);
+criterion_group!(sampling, interpolate_1024_4);
+criterion_main!(vecops, sampling);

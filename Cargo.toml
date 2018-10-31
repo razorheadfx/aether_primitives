@@ -14,7 +14,7 @@ num-complex = ">=0.0.0"
 criterion = "0.2"
 
 [[bench]]
-name = "vecops"
+name = "benches"
 harness = false
 
 [features]

@@ -38,8 +38,12 @@ macro_rules! assert_evm {
 
 pub mod vecops;
 
+/// Fourier Transform-related
 #[cfg(feature = "fft")]
 pub mod fft;
+
+/// Resampling (up/down), Interpolation
+pub mod sampling;
 
 #[cfg(test)]
 mod test {
