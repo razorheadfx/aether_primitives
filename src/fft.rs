@@ -6,7 +6,7 @@ pub enum Scale{
     None,
     /// Multiplies with 1/sqrt(N)
     /// with ```N```: transform length
-    /// Most common
+    /// Commonly used for symmetric spectra
     SN,
     /// Multiplies with 1/N
     /// with ```N```: transform length
@@ -35,4 +35,4 @@ pub trait Fft{
     fn ibwd(&mut self, input: &mut [cf32], s : Scale);
 
 
-} 
+}

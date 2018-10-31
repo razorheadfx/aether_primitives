@@ -24,7 +24,7 @@ pub trait VecOps {
     /// assumes an even number of elements
     fn vec_mirror(&mut self) -> &mut Self;
 
-    /// puts the contents of other into self
+    /// copies the contents of other into self
     /// (just shortcut for) slice1[a..b].copy_from_slice(slice[c..d])
     fn vec_clone(&mut self, other: impl AsRef<[cf32]>) -> &mut Self;
 
@@ -299,6 +299,8 @@ mod test {
     use super::cf32;
     use super::VecOps;
 
+    /// This is the API we want to achieve with this
+    /// Vector-related operations in one place
     #[test]
     fn vec_ergonomics() {
         let mut v = vec![cf32::new(2.0, 2.0); 100];
@@ -315,18 +317,44 @@ mod test {
     }
 
     #[test]
+    fn vec_scale(){
+        let mut v = vec![cf32::new(0.5, 0.5); 100];
+        let ones = vec![cf32::new(1.0, 1.0); 100];
+        v.vec_scale(2.0);
+
+        assert_evm!(&v, &ones);
+    }
+
+    #[test]
     fn vec_mul() {
-        unimplemented!()
+        let mut ones = vec![cf32::new(1.0, 1.0); 100];
+        let twos = vec![cf32::new(0.0, 2.0); 100];
+        let minus_two_two = vec![cf32::new(-2.0, 2.0); 100];
+
+        ones.vec_mul(&twos);
+
+        assert_evm!(&ones,&minus_two_two);
+
     }
 
     #[test]
     fn vec_div() {
-        unimplemented!()
+        let mut twos = vec![cf32::new(2.0, 2.0); 100];
+        let two_re = vec![cf32::new(2.0, 0.0); 100];
+        let ones = vec![cf32::new(1.0, 0.0); 100];
+        twos.vec_div(&two_re);
+
+        assert_evm!(&twos, ones);
+
     }
 
     #[test]
     fn vec_conj() {
-        unimplemented!()
+        let mut ones = vec![cf32::new(1.0, 1.0); 100];
+        let conj_ones = vec![cf32::new(1.0, -1.0); 100];
+        ones.vec_conj();
+
+        assert_evm!(ones, conj_ones, -80.0);
     }
 
     #[test]
@@ -348,22 +376,52 @@ mod test {
 
     #[test]
     fn vec_mirror() {
-        unimplemented!()
+        let mut even = (0..4).map(|i|cf32::new(i as f32, 0.0)).collect::<Vec<_>>(); 
+        let even_mirrored = [2,3,0,1].iter().map(|i|cf32::new(*i as f32, 0.0)).collect::<Vec<_>>();
+        even.vec_mirror();
+
+        assert_evm!(&even, &even_mirrored);
+
+        // This case is excluded as per documentation, but we check for it anyway
+        let mut odd = (0..5).map(|i|cf32::new(i as f32, 0.0)).collect::<Vec<_>>();
+        let odd_mirrored = [3,4,0,1,2].iter().map(|i|cf32::new(*i as f32, 0.0)).collect::<Vec<_>>();
+        odd.vec_mirror();
+        assert_evm!(&odd, &odd_mirrored);
     }
 
     #[test]
     fn vec_clone() {
-        unimplemented!()
+        let mut v = vec![cf32::new(2.0, 2.0); 100];
+        let ones = vec![cf32::new(1.0, 1.0); 100];
+        v.vec_clone(&ones);
+
+        assert_evm!(&v,&ones);
     }
 
     #[test]
     fn vec_zero() {
-        unimplemented!()
+        let mut v = vec![cf32::new(2.0, 2.0); 100];
+        let zeros = vec![cf32::new(0.0, 0.0); 100];
+
+        v.vec_zero();
+
+        assert_evm!(&v, &zeros);
+
     }
 
     #[test]
     fn vec_mutate() {
-        unimplemented!()
+        let mut v = vec![cf32::new(1.0, 1.0); 100];
+        let linear = (0..100).map(|i|cf32::new(i as f32, i as f32)).collect::<Vec<_>>();
+
+        let mut x = 0;
+        let f = move |c : &mut cf32|{
+            *c = c.scale(x as f32);
+            x+=1;
+        };
+        v.vec_mutate(f);
+
+        assert_evm!(&v,&linear);
     }
 
     #[test]

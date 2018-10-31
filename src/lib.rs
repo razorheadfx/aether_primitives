@@ -2,7 +2,7 @@ extern crate num_complex;
 
 /// Shorthand for Complex<f32>
 /// Default sample type
-
+/// This type is repr(C), thus 2 f32 back-to-back
 #[allow(non_camel_case_types)]
 pub type cf32 = num_complex::Complex32;
 
@@ -11,9 +11,16 @@ pub type cf32 = num_complex::Complex32;
 /// EVM = 10 log (P_error/P_ref) => Error vector in relation to the actually expected signal in dB.
 /// The error vector is defined as the vector between the reference symbol and the actually received signal.
 /// We achieve this by computing the norm of (actual-ref)
+/// If no EVM threshold is provided -80dB = 1e-8 = 10nano is used
 #[macro_export]
 macro_rules! assert_evm {
+
+    ($actual:expr, $ref:expr) => {
+        assert_evm!($actual,$ref,-80.0)
+    };
+
     ($actual:expr, $ref:expr, $evm_limit_db:expr) => {
+        assert_eq!($actual.len(),$ref.len(), "Input slices/vectors must be same length");
         for (idx, (act, re)) in $actual.iter().zip($ref).enumerate() {
             let evm = (act - re).norm();
             let limit = re.norm() * ($evm_limit_db / 10f32).powi(10);
@@ -30,6 +37,9 @@ macro_rules! assert_evm {
 }
 
 pub mod vecops;
+
+#[cfg(feature = "fft")]
+pub mod fft;
 
 #[cfg(test)]
 mod test {
