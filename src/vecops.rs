@@ -317,7 +317,7 @@ mod test {
     }
 
     #[test]
-    fn vec_scale(){
+    fn vec_scale() {
         let mut v = vec![cf32::new(0.5, 0.5); 100];
         let ones = vec![cf32::new(1.0, 1.0); 100];
         v.vec_scale(2.0);
@@ -333,8 +333,7 @@ mod test {
 
         ones.vec_mul(&twos);
 
-        assert_evm!(&ones,&minus_two_two);
-
+        assert_evm!(&ones, &minus_two_two);
     }
 
     #[test]
@@ -345,7 +344,6 @@ mod test {
         twos.vec_div(&two_re);
 
         assert_evm!(&twos, ones);
-
     }
 
     #[test]
@@ -376,15 +374,21 @@ mod test {
 
     #[test]
     fn vec_mirror() {
-        let mut even = (0..4).map(|i|cf32::new(i as f32, 0.0)).collect::<Vec<_>>(); 
-        let even_mirrored = [2,3,0,1].iter().map(|i|cf32::new(*i as f32, 0.0)).collect::<Vec<_>>();
+        let mut even = (0..4).map(|i| cf32::new(i as f32, 0.0)).collect::<Vec<_>>();
+        let even_mirrored = [2, 3, 0, 1]
+            .iter()
+            .map(|i| cf32::new(*i as f32, 0.0))
+            .collect::<Vec<_>>();
         even.vec_mirror();
 
         assert_evm!(&even, &even_mirrored);
 
         // This case is excluded as per documentation, but we check for it anyway
-        let mut odd = (0..5).map(|i|cf32::new(i as f32, 0.0)).collect::<Vec<_>>();
-        let odd_mirrored = [3,4,0,1,2].iter().map(|i|cf32::new(*i as f32, 0.0)).collect::<Vec<_>>();
+        let mut odd = (0..5).map(|i| cf32::new(i as f32, 0.0)).collect::<Vec<_>>();
+        let odd_mirrored = [3, 4, 0, 1, 2]
+            .iter()
+            .map(|i| cf32::new(*i as f32, 0.0))
+            .collect::<Vec<_>>();
         odd.vec_mirror();
         assert_evm!(&odd, &odd_mirrored);
     }
@@ -395,7 +399,7 @@ mod test {
         let ones = vec![cf32::new(1.0, 1.0); 100];
         v.vec_clone(&ones);
 
-        assert_evm!(&v,&ones);
+        assert_evm!(&v, &ones);
     }
 
     #[test]
@@ -406,22 +410,23 @@ mod test {
         v.vec_zero();
 
         assert_evm!(&v, &zeros);
-
     }
 
     #[test]
     fn vec_mutate() {
         let mut v = vec![cf32::new(1.0, 1.0); 100];
-        let linear = (0..100).map(|i|cf32::new(i as f32, i as f32)).collect::<Vec<_>>();
+        let linear = (0..100)
+            .map(|i| cf32::new(i as f32, i as f32))
+            .collect::<Vec<_>>();
 
         let mut x = 0;
-        let f = move |c : &mut cf32|{
+        let f = move |c: &mut cf32| {
             *c = c.scale(x as f32);
-            x+=1;
+            x += 1;
         };
         v.vec_mutate(f);
 
-        assert_evm!(&v,&linear);
+        assert_evm!(&v, &linear);
     }
 
     #[test]

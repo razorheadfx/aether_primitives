@@ -56,13 +56,13 @@ where
         .for_each(|(d, s)| *d = *s);
 }
 
-
 #[cfg(test)]
-mod tests {
+mod test {
 
-use crate::cf32;
-use crate::sampling::interpolate;
-
+    use crate::cf32;
+    use crate::sampling::downsample;
+    use crate::sampling::downsample_sb;
+    use crate::sampling::interpolate;
 
     #[test]
     fn interpolate_2_between() {
@@ -121,5 +121,45 @@ use crate::sampling::interpolate;
         assert_eq!(dst.len(), src.len() + (src.len() - 1) * interpolation);
 
         assert_eq!(dst, check);
+    }
+
+    #[test]
+    fn downsample_21_v_7() {
+        let src = (0..21).collect::<Vec<_>>();
+        let mut dst = vec![0; 7];
+        let target = (0..7).map(|x| x * 3).collect::<Vec<_>>();
+
+        downsample(&src[..], &mut dst[..]);
+        assert_eq!(dst, target);
+
+        let mut dst = vec![0; 7];
+
+        downsample_sb(&src[..], &mut dst[..]);
+        assert_eq!(dst, target);
+    }
+
+    #[test]
+    fn downsample_16_v_4() {
+        let src = (0..16).collect::<Vec<_>>();
+        let mut dst = vec![0; 4];
+
+        downsample(&src[..], &mut dst[..]);
+
+        let target = (0..4).map(|x| x * 4).collect::<Vec<_>>();
+
+        assert_eq!(dst, target);
+
+        let mut dst = vec![0; 4];
+        downsample_sb(&src[..], &mut dst[..]);
+        assert_eq!(dst, target);
+    }
+
+    #[test]
+    #[should_panic]
+    fn downsample_7_v_3_fail() {
+        let src = (0..7).collect::<Vec<_>>();
+        let mut dst = vec![0; 3];
+
+        downsample(&src[..], &mut dst[..]);
     }
 }

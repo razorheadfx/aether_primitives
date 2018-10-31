@@ -48,7 +48,7 @@ pub mod sampling;
 #[cfg(test)]
 mod test {
     use super::cf32;
-    
+
     #[test]
     fn evm_correct() {
         let refr = vec![
