@@ -6,8 +6,7 @@
 Aether is designed to ease development of SDR applications by providing convenient (low-level) building blocks for common operations.  
 
 ## Examples
-Core operations are implemented in the form of the VecOps trait implemented for Vec/Slice of [num::Complex<f32>](https://docs.rs/num-complex/latest/num_complex/type.Complex32.html) which is C compatible, thus may be used from C.  
-
+Core operations are implemented in the form of the VecOps trait implemented for Vecs/Slices of the C compatible [num::Complex<f32>](https://docs.rs/num-complex/latest/num_complex/type.Complex32.html).  
 
 ```rust
 // #[macro_use] // includes the assert_evm macro
@@ -38,14 +37,16 @@ assert_evm!(&v, &correct, -80.0);
 * The base versions will be written in idiomatic rust  
 * Optimisations and unsafe speedups will be hidden behind feature flags  
 * The actual version of the num-traits and num-complex crates are not pinned by aether because multiple concurrent versions of the same trait are incompatible.  
-This causes problems (type level incompatibility) if there are libraries that expect a certain version are expected be used interchangeably within your application.  
+This can cause type level incompatibility if there are dependencies which expose different versions of the same type to the user.
+Hence the version is not pinned as cargo will usually try to build the same version of num-complex and num-traits for the biggest set of dependencies (within their version constraints), thus reducing the probability of this happening.
 
 ### TODO
 - [ ] Pull out choice of FFT ([RustFFT](https://github.com/awelkie/RustFFT), [chfft](https://github.com/chalharu/chfft))
 - [ ] Add vec_align! macro to create vecs aligned for SIMD instructions
 - [ ] Add Fixed-size cf32 Vecs
     - maybe derefs to slice for convenience
-- [ ] Add VecStats
+- [ ] Add VecStats (f32,cf32)
+    - Min(index),Max(index),Mean(index),Power
 - [ ] Add VecOps Features
     - Unsafe Feature: use [VOLK](https://libvolk.org) for ops
         - Add tests to ensure generated code is correctly aligned - should be ensured since cf32 (2x4 bytes) is 8 bytes. VOLK [prefers](https://libvolk.org/doxygen/concepts_terms_and_techniques.html) 32byte alignment /libfftw [prefers](http://www.fftw.org/fftw3_doc/SIMD-alignment-and-fftw_005fmalloc.html) 16 byte alignment
