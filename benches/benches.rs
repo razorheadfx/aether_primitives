@@ -117,5 +117,11 @@ fn downsample_step_by_30720_to_1024(c: &mut Criterion) {
 }
 
 criterion_group!(vecops, mul, clone);
-criterion_group!(sampling, interpolate_1024_4,interpolate_400_3, downsample_30720_to_1024, downsample_step_by_30720_to_1024);
+criterion_group!(
+    sampling,
+    interpolate_1024_4,
+    interpolate_400_3,
+    downsample_30720_to_1024,
+    downsample_step_by_30720_to_1024
+);
 criterion_main!(vecops, sampling);

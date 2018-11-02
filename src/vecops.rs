@@ -5,8 +5,36 @@ use std::cmp;
 use super::fft::Fft;
 
 /// This trait is designed to ease operations on complex slices/"vectors"
-/// They are not necessarily the most performant way of doing things
-/// especially the fft operations are not meant for time/allocation critical situations
+/// They are not necessarily the most performant way of doing things but
+/// they are written in idiomatic and hence safe Rust.
+///
+///```
+///#[macro_use]
+/// extern crate aether_primitives;
+/// use aether_primitives::{cf32, vecops::VecOps};
+///# fn main(){
+///# // the main(){} is need in order to get around "loading macro must be at the crate root error"
+///
+/// let mut v = vec![cf32::new(2.0, 2.0); 100];
+/// let twos = v.clone();
+/// let ones = vec![cf32::new(1.0, 1.0); 100];
+///
+/// let correct = vec![cf32::new(1.0, -1.0); 100];
+///
+/// v.vec_div(&twos)
+///     .vec_mul(&twos)
+///     .vec_zero() // zero the vector
+///     .vec_add(&ones)
+///     .vec_sub(&twos)
+///     .vec_clone(&ones)
+///     .vec_mutate(|c| c.im = -1.0)
+///     .vec_conj()
+///     .vec_mirror(); // mirror swaps elements around the midpoint of the array
+///
+/// // ensure each element's error vector magnitude in relation to the correct complex number is below -80dB
+/// assert_evm!(&v, &correct, -80.0);
+/// # }
+///```
 pub trait VecOps {
     /// scale this this vector with the given f32
     fn vec_scale(&mut self, scale: f32) -> &mut Self;
@@ -78,7 +106,7 @@ macro_rules! impl_vec_ops {
                 self[..min]
                     .iter_mut()
                     .zip(other.as_ref()[..min].iter())
-                    .for_each(|(a, b)| *a = *a * b);
+                    .for_each(|(a, b)| *a *= b);
                 self
             }
 
@@ -91,7 +119,7 @@ macro_rules! impl_vec_ops {
 
                 self.iter_mut()
                     .zip(other.as_ref().iter())
-                    .for_each(|(a, b)| *a = *a / b);
+                    .for_each(|(a, b)| *a /= b);
                 self
             }
 
@@ -191,7 +219,7 @@ macro_rules! impl_vec_ops {
                 self[..min]
                     .iter_mut()
                     .zip(other.as_ref()[..min].iter())
-                    .for_each(|(a, b)| *a = *a * b);
+                    .for_each(|(a, b)| *a *= b);
                 self
             }
 
@@ -204,7 +232,7 @@ macro_rules! impl_vec_ops {
 
                 self.iter_mut()
                     .zip(other.as_ref().iter())
-                    .for_each(|(a, b)| *a = *a / b);
+                    .for_each(|(a, b)| *a /= b);
                 self
             }
 
@@ -296,25 +324,8 @@ impl_vec_ops!(Vec<cf32>);
 
 #[cfg(test)]
 mod test {
-    use super::cf32;
-    use super::VecOps;
-
-    /// This is the API we want to achieve with this
-    /// Vector-related operations in one place
-    #[test]
-    fn vec_ergonomics() {
-        let mut v = vec![cf32::new(2.0, 2.0); 100];
-        let v2 = v.clone();
-        let ones = vec![cf32::new(1.0, 1.0); 100];
-
-        v.vec_div(&v2)
-            .vec_mul(&v2)
-            .vec_scale(0.5)
-            .vec_add(&ones)
-            .vec_sub(&v2)
-            .vec_mirror()
-            .vec_conj();
-    }
+    use crate::cf32;
+    use crate::vecops::VecOps;
 
     #[test]
     fn vec_scale() {

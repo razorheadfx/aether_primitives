@@ -2,7 +2,7 @@ extern crate num_complex;
 
 /// Shorthand for Complex<f32>
 /// Default sample type
-/// This type is repr(C), thus 2 f32 back-to-back
+/// This type is repr(C), thus 2 f32s back-to-back equivalent to [f32;2]
 #[allow(non_camel_case_types)]
 pub type cf32 = num_complex::Complex32;
 
