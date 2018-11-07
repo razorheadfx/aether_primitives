@@ -8,6 +8,7 @@ use super::fft::Fft;
 /// They are not necessarily the most performant way of doing things but
 /// they are written in idiomatic and hence safe Rust.
 ///
+/// __Example__
 ///```
 ///#[macro_use]
 /// extern crate aether_primitives;

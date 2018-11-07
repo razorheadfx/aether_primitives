@@ -45,6 +45,9 @@ pub mod fft;
 /// Resampling (up/down), Interpolation
 pub mod sampling;
 
+/// Pseudo-Random Sequence Generation
+pub mod sequence;
+
 #[cfg(test)]
 mod test {
     use super::cf32;
