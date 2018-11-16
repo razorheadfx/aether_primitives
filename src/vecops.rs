@@ -66,7 +66,7 @@ pub trait VecOps {
     /// element-wise add the other slice to this one
     fn vec_add(&mut self, other: impl AsRef<[cf32]>) -> &mut Self;
 
-    /// element-wise subtract the other slice to this one
+    /// element-wise subtract the other slice from this one
     fn vec_sub(&mut self, other: impl AsRef<[cf32]>) -> &mut Self;
 
     /// perform fft and multiply the result with an optional scalar

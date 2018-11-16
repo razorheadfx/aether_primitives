@@ -36,6 +36,7 @@ macro_rules! assert_evm {
     };
 }
 
+/// Neat operations on vectors and slices
 pub mod vecops;
 
 /// Fourier Transform-related
