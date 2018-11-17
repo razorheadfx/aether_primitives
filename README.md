@@ -39,6 +39,17 @@ assert_evm!(&v, &correct, -80.0);
 * The actual version of the num-traits and num-complex crates are not pinned by aether because multiple concurrent versions of the same trait are incompatible.  
 This can cause type level incompatibility if there are dependencies which expose different versions of the same type to the user.
 Hence the version is not pinned as cargo will usually try to build the same version of num-complex and num-traits for the biggest set of dependencies (within their version constraints), thus reducing the probability of this happening.
+* For performance reasons the use of dynamic dispatch (Trait objects ```dyn <Trait>```) will be avoided.
+
+## Implemented functionality
+- Macros:
+    - assert_evm!: check if elements of both vectors have a certain error vector magnitude relative to each other (given in dBm)
+- Vecops: Helpers for operations of vectors/slices of cf32
+    - Element wise operations: add, subtract, divide, multiply, complex conjugate, mutate
+    . Mirror: Swap elements around mid of vector (for even length vectros)
+    - Zero entire vector, copy elements over from another vector
+- Sequence: Helpers for binary pseudo-random sequence generation (M-Sequences)
+    - expand: Expand a seed value
 
 ### TODO
 - [ ] Pull out choice of FFT ([RustFFT](https://github.com/awelkie/RustFFT), [chfft](https://github.com/chalharu/chfft))
