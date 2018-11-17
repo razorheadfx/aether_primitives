@@ -10,6 +10,8 @@ edition = "2018"
 num-traits = ">=0.0.0"
 num-complex = ">=0.0.0"
 
+chfft = { optional = true, version = "0.2.4"}
+
 [dev-dependencies]
 criterion = "0.2"
 
@@ -19,3 +21,4 @@ harness = false
 
 [features]
 default = []
+fft_chfft = ["chfft"]

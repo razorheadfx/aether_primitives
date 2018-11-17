@@ -2,7 +2,7 @@ use super::cf32;
 use std::cmp;
 
 #[cfg(feature = "fft")]
-use super::fft::Fft;
+use crate::fft::{Fft, Scale};
 
 /// This trait is designed to ease operations on complex slices/"vectors"
 /// They are not necessarily the most performant way of doing things but
@@ -71,21 +71,21 @@ pub trait VecOps {
 
     /// perform fft and multiply the result with an optional scalar
     #[cfg(feature = "fft")]
-    fn vec_fft(&mut self, scale: Option<f32>) -> &mut Self;
+    fn vec_fft(&mut self, scale: fft::Scale) -> &mut Self;
 
     /// perform ifft and multiply the result with an optional scalar
     #[cfg(feature = "fft")]
-    fn vec_ifft(&mut self, scale: Option<f32>) -> &mut Self;
+    fn vec_ifft(&mut self, scale: fft::Scale) -> &mut Self;
 
     /// perform fft and multiply the result with an optional scalar
     /// reuses a prebuilt fft instance
     #[cfg(feature = "fft")]
-    fn vec_rfft(&mut self, fft: &mut impl Fft, scale: Option<f32>) -> &mut Self;
+    fn vec_rfft(&mut self, fft: &mut impl fft::Fft, scale: fft::Scale) -> &mut Self;
 
     /// perform fft and multiply the result with an optional scalar
     /// reuses a prebuilt fft instance
     #[cfg(feature = "fft")]
-    fn vec_rifft(&mut self, fft: &mut impl Fft, scale: Option<f32>) -> &mut Self;
+    fn vec_rifft(&mut self, fft: &mut impl fft::Fft, scale: fft::Scale) -> &mut Self;
 }
 
 macro_rules! impl_vec_ops {
