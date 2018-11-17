@@ -1,4 +1,4 @@
-use cf32;
+use crate::cf32;
 
 /// Scaling Policy for Transforms
 pub enum Scale{
@@ -33,6 +33,9 @@ pub trait Fft{
     /// In-place iFFT (Backward)
     /// Overwrites the input with the output of the transform
     fn ibwd(&mut self, input: &mut [cf32], s : Scale);
+
+    /// Retrieve the (fixed) size (number of bins) this is generated for
+    fn len(&self) -> usize;
 
 
 }

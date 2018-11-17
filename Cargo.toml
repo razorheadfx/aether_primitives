@@ -19,6 +19,3 @@ harness = false
 
 [features]
 default = []
-
-fft = []
-
