@@ -6,7 +6,7 @@
 Aether is designed to ease development of SDR applications by providing convenient (low-level) building blocks for common operations.  
 
 ## Examples
-Core operations are implemented in the form of the VecOps trait implemented for Vecs/Slices of the C compatible [num::Complex<f32>](https://docs.rs/num-complex/latest/num_complex/type.Complex32.html).  
+Core operations are implemented in the form of the VecOps trait implemented for Vecs/Slices of the C compatible [num::Complex<f32>](https://docs.rs/num-complex/latest/num_complex/type.Complex32.html) (```cf32``` for short).  
 
 ```rust
 // #[macro_use] // includes the assert_evm macro
@@ -50,9 +50,11 @@ Hence the version is not pinned as cargo will usually try to build the same vers
     - Zero entire vector, copy elements over from another vector
 - Sequence: Helpers for binary pseudo-random sequence generation (M-Sequences)
     - expand: Expand a seed value
+- FFT:
+    - support for FFT on vectors/slice of cf32 using [chfft](https://github.com/chalharu/chfft)
 
-### TODO
-- [ ] Pull out choice of FFT ([RustFFT](https://github.com/awelkie/RustFFT), [chfft](https://github.com/chalharu/chfft))
+## TODO
+- [ ] Pull out choice of FFT ([RustFFT](https://github.com/awelkie/RustFFT) vs chfft) via wrapper
 - [ ] Add vec_align! macro to create vecs aligned for SIMD instructions
 - [ ] Add Fixed-size cf32 Vecs
     - maybe derefs to slice for convenience
