@@ -14,7 +14,7 @@
 /// assert_eq!(expanded, expected, "Seed expansion failed");
 /// assert_eq!(expanded.len(), 32usize)
 /// ```
-pub fn expand(seed : u64, len: usize) -> Vec<u8>{
+pub fn expand(seed: u64, len: usize) -> Vec<u8> {
     // left shift seed value and use binary & to extract the bit we're interested in
     (0..len).map(|i| (seed >> i & 1) as u8).collect()
 }
@@ -22,11 +22,11 @@ pub fn expand(seed : u64, len: usize) -> Vec<u8>{
 /// Generate a M-Sequence based on initial values and a number of taps
 /// Such sequences are common building blocks for scrambling, synchronisation or modulation
 /// (Direct-Sequence Spread-Spectrum) systems.
-/// ```seed``` : 
+/// ```seed``` :
 /// ```generator```: a function that generates elements,
 /// may rely on values currently within the sequence,
 // is also provided the current position to be filled by the new value
-/// ```len``` : length of the 
+/// ```len``` : length of the
 /// __Example__
 /// ```
 /// use aether_primitives::sequence;
@@ -44,7 +44,7 @@ pub fn expand(seed : u64, len: usize) -> Vec<u8>{
 /// let seq = sequence::generate(init, gen, 1600);
 /// assert_eq!(seq.len(), 1600);
 /// // not going to check these values here
-pub fn generate(mut init : Vec<u8>, generator : impl Fn(usize,&[u8]) -> u8, len : usize) -> Vec<u8>{
+pub fn generate(mut init: Vec<u8>, generator: impl Fn(usize, &[u8]) -> u8, len: usize) -> Vec<u8> {
     while init.len() < len {
         let next_elem = generator(init.len(), init.as_ref());
         init.push(next_elem);
@@ -52,21 +52,19 @@ pub fn generate(mut init : Vec<u8>, generator : impl Fn(usize,&[u8]) -> u8, len 
     init
 }
 
-
-
 #[cfg(test)]
-mod test{
+mod test {
     use crate::sequence;
 
     #[test]
     /// A simple sequence
-    fn simple_sequence(){
-        let gen = |n : usize, s : &[u8]| (s[n-1] + s[n-2]) % 2;
+    fn simple_sequence() {
+        let gen = |n: usize, s: &[u8]| (s[n - 1] + s[n - 2]) % 2;
 
-        let seed = vec![1,0];
+        let seed = vec![1, 0];
         let seq = sequence::generate(seed, gen, 6);
 
-        assert_eq!(seq, vec![1,0,1,1,0,1]);
+        assert_eq!(seq, vec![1, 0, 1, 1, 0, 1]);
     }
 
 }

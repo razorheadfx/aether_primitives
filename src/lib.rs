@@ -39,10 +39,9 @@ macro_rules! assert_evm {
 #[macro_export]
 macro_rules! vec_align {
     [$init:expr; $len:expr] => {
-        vec![$init; $len]
+        unimplemented!()
     }
 }
-
 
 /// Neat operations on vectors and slices
 pub mod vecops;
@@ -98,9 +97,8 @@ mod test {
     }
 
     #[test]
-    fn vec_align(){
+    fn vec_align() {
         let v = vec_align![cf32::default(); 2048];
-        unimplemented!()
     }
 
 }
