@@ -48,25 +48,33 @@ Hence the version is not pinned as cargo will usually try to build the same vers
     - Element wise operations: add, subtract, divide, multiply, complex conjugate, mutate
     . Mirror: Swap elements around mid of vector (for even length vectros)
     - Zero entire vector, copy elements over from another vector
+    - FEATURE: Perform (i)FFTs using new or existing fourier transform instance (enabled via ```fft_chfft```)
 - Sequence: Helpers for binary pseudo-random sequence generation (M-Sequences)
-    - expand: Expand a seed value
-- FFT:
-    - support for FFT on vectors/slice of cf32 using [chfft](https://github.com/chalharu/chfft)
+    - expand: Expand a seed value into an initialisation vector
+    - generate: Generate 
+- Sampling
+    - 
+- FFT
+    - perform fast fourier transforms (forward/backward) with different scaling factors
+- Benches: benchmarks for most operations in aether using the criterion.rs framework
+    - downsampling, interpolation, fft, 
 
 ## TODO
-- [ ] Pull out choice of FFT ([RustFFT](https://github.com/awelkie/RustFFT) vs chfft) via wrapper
+- [ ] Pull out choice of FFT ([RustFFT](https://github.com/awelkie/RustFFT) vs [chfft](https://github.com/chalharu/chfft)) via wrappers
+    - [x] Implement wrapper for chfft
+    - [ ] Implement wrapper for RustFFT
+         - Issue: cf32 incompatible with RustFFTs version of cf32 (maybe add some shady casts since the structs are the same)
 - [ ] Add vec_align! macro to create vecs aligned for SIMD instructions
 - [ ] Add Fixed-size cf32 Vecs
     - maybe derefs to slice for convenience
 - [ ] Add VecStats (f32,cf32)
     - Min(index),Max(index),Mean(index),Power
 - [ ] Add VecOps Features
-    - Unsafe Feature: use [VOLK](https://libvolk.org) for ops
+    - [x] FFTs : vec_fft,vec_ifft, vec_rifft, vec_rfft, vec_rifft; rifft/rfft reuse an existing instance of fft::Cfft currently supported by building with ```fft_chfft``` enabled.  
+    - Use [faster](https://github.com/AdamNiederer/faster) once it works on stable again
+    - [ ] Feature: use [VOLK](https://libvolk.org) for ops
         - Add tests to ensure generated code is correctly aligned - should be ensured since cf32 (2x4 bytes) is 8 bytes. VOLK [prefers](https://libvolk.org/doxygen/concepts_terms_and_techniques.html) 32byte alignment /libfftw [prefers](http://www.fftw.org/fftw3_doc/SIMD-alignment-and-fftw_005fmalloc.html) 16 byte alignment
         - must also hook into the vec_align macro
-    - Feature: use [faster](https://github.com/AdamNiederer/faster) (currently broken)
-    - Optional: vec_norm, vec_fft,vec_ifft, vec_rifft, vec_rfft, vec_rifft (depends on fft feature)
 - [ ] Add Correlation by Freq. Domain Convolution
 - [ ] Add FIR
-- [ ] Add FFT benches
 

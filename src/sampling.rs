@@ -1,7 +1,9 @@
 use crate::cf32;
 
-/// linearly interpolate between samples in ```src``` and write the result to ```dst```
-/// TODO: doc
+/// linearly interpolate ```n_between``` samples between each consecutive pair of values  in ```src```
+/// and write the result to ```dst```.
+/// TODO: reference paper which looked at different interpolation techniques and concluded that linear
+/// is sufficient for most purposes
 pub fn interpolate(src: &[cf32], dst: &mut Vec<cf32>, n_between: usize) {
     src.windows(2).for_each(|s| {
         let x1 = s[0];

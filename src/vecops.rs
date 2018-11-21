@@ -453,25 +453,23 @@ mod test {
     #[test]
     #[cfg(feature = "fft")]
     fn vec_fft() {
-        unimplemented!()
-    }
-
-    #[test]
-    #[cfg(feature = "fft")]
-    fn vec_ifft() {
-        unimplemented!()
+        use crate::fft::Scale;
+        let v = vec![cf32::new(1.0, 1.0); 100];
+        let mut c = v.clone();
+        c.vec_fft(Scale::None).vec_ifft(Scale::None);
+        assert_evm!(c, v, -80.0);
     }
 
     #[test]
     #[cfg(feature = "fft")]
     fn vec_rfft() {
-        unimplemented!()
+        use crate::fft::{Scale, Cfft};
+        let v = vec![cf32::new(1.0, 1.0); 100];
+        let mut c = v.clone();
+        let mut fft = Cfft::with_len(100);
+        c.vec_rfft(&mut fft, Scale::None).vec_rifft(&mut fft, Scale::None);
+        assert_evm!(c, v, -80.0);
     }
 
-    #[test]
-    #[cfg(feature = "fft")]
-    fn vec_rifft() {
-        unimplemented!()
-    }
 
 }
