@@ -18,7 +18,7 @@ pub enum Scale {
 }
 
 impl Scale {
-    pub fn scale(&self, data: &mut [cf32]) {
+    pub fn scale(self, data: &mut [cf32]) {
         match self {
             Scale::None => (),
             Scale::SN => {
@@ -30,7 +30,7 @@ impl Scale {
                 data.vec_scale(s);
             }
             Scale::X(s) => {
-                data.vec_scale(*s);
+                data.vec_scale(s);
             }
         }
     }
@@ -39,18 +39,21 @@ impl Scale {
 /// Wrapper to be implemented for different fft implementations
 /// For example for use in VecOps
 /// FFT and input must be the same length
+#[allow(clippy::len_without_is_empty)]
 pub trait Fft {
-    /// FFT (Forward) from ```input``` to ```output```
+    /// FFT (Forward) from ```input``` to ```output```  
+    /// Does not modify contents of ```input```
     fn fwd(&mut self, input: &[cf32], output: &mut [cf32], s: Scale);
 
-    /// iFFT (Backward) from ```input``` to ```output```
+    /// iFFT (Backward) from ```input``` to ```output```  
+    /// Does not modify contents of ```input```
     fn bwd(&mut self, input: &[cf32], output: &mut [cf32], s: Scale);
 
-    /// In-place FFT (Forward)
+    /// In-place FFT (Forward)  
     /// Overwrites the ```input``` with the output of the transform
     fn ifwd(&mut self, input: &mut [cf32], s: Scale);
 
-    /// In-place iFFT (Backward)
+    /// In-place iFFT (Backward)  
     /// Overwrites the input with the output of the transform
     fn ibwd(&mut self, input: &mut [cf32], s: Scale);
 
@@ -81,8 +84,9 @@ mod ch {
         pub fn with_len(len: usize) -> Cfft {
             Cfft {
                 fft: CFft1D::<f32>::with_len(len),
-                tmp: vec_align![cf32::default(); len],
-                len: len,
+                // TODO: use vec_align
+                tmp: vec![cf32::default(); len],
+                len,
             }
         }
     }
