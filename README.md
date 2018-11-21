@@ -49,9 +49,10 @@ Hence the version is not pinned as cargo will usually try to build the same vers
     - FEATURE: Perform (i)FFTs using new or existing fourier transform instance (enabled via ```fft_chfft```)
 - Sequence: Helpers for binary pseudo-random sequence generation (M-Sequences)
     - expand: Expand a seed value into an initialisation vector
-    - generate: Generate 
+    - generate: Generate
 - Sampling
-    - 
+    - linear interpolation
+    - even downsampling
 - FFT
     - perform fast fourier transforms (forward/backward) with different scaling factors
 - Benches: benchmarks for most operations in aether using the criterion.rs framework
