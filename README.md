@@ -77,3 +77,5 @@ Hence the version is not pinned as cargo will usually try to build the same vers
 - [ ] Add Correlation by Freq. Domain Convolution
 - [ ] Add FIR
 
+## License
+[Mozilla Public License 2.0](LICENSE)
