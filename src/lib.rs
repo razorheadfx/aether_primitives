@@ -98,7 +98,7 @@ mod test {
 
     #[test]
     fn vec_align() {
-        let v = vec_align![cf32::default(); 2048];
+        let _v = vec_align![cf32::default(); 2048];
     }
 
 }

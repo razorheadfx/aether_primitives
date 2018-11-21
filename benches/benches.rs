@@ -23,6 +23,17 @@ fn mul(c: &mut Criterion) {
     });
 }
 
+fn scale(c: &mut Criterion) {
+    c.bench_function("VecOps.vec_scale", |b| {
+        b.iter_with_setup(
+            ||vec![cf32::new(1.0, 1.0); 2048],
+            |mut v| {
+                v.vec_scale(2.0);
+            },
+        );
+    });
+}
+
 fn clone(c: &mut Criterion) {
     c.bench_function("VecOps.vec_clone", |b| {
         b.iter_with_setup(
@@ -43,7 +54,7 @@ fn interpolate(c: &mut Criterion) {
                     let src = (0..*len)
                         .map(|i| cf32::new(i as f32, 0.0))
                         .collect::<Vec<_>>();
-                    let dst = vec![cf32::default(); (*len * 2 / *between)];
+                    let dst = vec![cf32::default(); *len * 2 / *between];
                     (src, dst)
                 },
                 |(src, mut dst)| {
@@ -87,7 +98,7 @@ fn downsample_step_by_30720_to_1024(c: &mut Criterion) {
     });
 }
 
-criterion_group!(vecops, mul, clone);
+criterion_group!(vecops, mul, clone, scale);
 criterion_group!(
     sampling,
     interpolate,
@@ -96,6 +107,7 @@ criterion_group!(
 );
 
 //////////////---------------ffts
+#[cfg(feature = "fft")]
 use aether_primitives::fft::{Fft, Scale};
 
 #[cfg(feature = "fft_chfft")]
@@ -158,7 +170,7 @@ fn copy_ffts(_c: &mut Criterion) {
                         let fft = Cfft::with_len(len);
                         (input, output, fft)
                     },
-                    |(mut input, mut output, mut fft)| {
+                    |(input, mut output, mut fft)| {
                         let s = Scale::SN;
                         fft.fwd(&input, &mut output, s);
                     },
@@ -178,7 +190,7 @@ fn copy_ffts(_c: &mut Criterion) {
                         let fft = Cfft::with_len(len);
                         (input, output, fft)
                     },
-                    |(mut input, mut output, mut fft)| {
+                    |(input, mut output, mut fft)| {
                         let s = Scale::SN;
                         fft.bwd(&input, &mut output, s);
                     },
