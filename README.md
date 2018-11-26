@@ -56,7 +56,10 @@ Hence the version is not pinned as cargo will usually try to build the same vers
     - linear interpolation
     - even downsampling
 - FFT
-    - perform fast fourier transforms (forward/backward) with different scaling factors
+    - perform fast fourier transforms (forward/backward) on slices/vecs of cf32 with different scaling factors
+- File: Operations for handling files of samples/other data
+    - binary file writing and reading for arbitrary structs
+    - csv file writing and reading for arbitrary structs
 - Benches: benchmarks for most operations in aether using the criterion.rs framework
     - downsampling, interpolation, fft, 
 
@@ -78,6 +81,9 @@ Hence the version is not pinned as cargo will usually try to build the same vers
         - must also hook into the vec_align macro
 - [ ] Add Correlation by Freq. Domain Convolution
 - [ ] Add FIR
+- [x] Add Reading and writing of files (esp. cf32)
+    - [x] binary
+    - [x] csv
 
 ## License
 [Mozilla Public License 2.0](LICENSE)
