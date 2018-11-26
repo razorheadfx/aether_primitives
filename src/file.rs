@@ -13,12 +13,13 @@ pub fn count_structs_in_file<T>(filepath: &PathBuf) -> io::Result<usize> {
     filepath.metadata().and_then(|x| {
         let len = x.len() as usize;
         let s = mem::size_of::<T>();
-        match len % s == 0 {
-            true => Ok(len / s),
-            false => Err(Error::new(
+        if len % s == 0 {
+            Ok(len / s)
+        }else {
+            Err(Error::new(
                 ErrorKind::UnexpectedEof,
                 "File does not contain an integer number of the requested struct",
-            )),
+            ))
         }
     })
 }
@@ -28,7 +29,7 @@ pub fn count_structs_in_file<T>(filepath: &PathBuf) -> io::Result<usize> {
 pub fn binary_reader<T>(filepath: &PathBuf) -> io::Result<BinaryReader<T>> {
     count_structs_in_file::<T>(filepath)
         .and(OpenOptions::new().read(true).write(false).open(filepath))
-        .map(|f| BufReader::new(f))
+        .map(BufReader::new)
         .map(|inner| BinaryReader::<T> {
             inner,
             loaded_type: PhantomData::<T>,
@@ -81,7 +82,7 @@ pub fn binary_writer<T>(filepath: &PathBuf) -> io::Result<BinaryWriter<T>> {
             .truncate(true)
             .create(true)
             .open(filepath)
-        .map(|f| BufWriter::new(f))
+        .map(BufWriter::new)
         .map(|inner| BinaryWriter::<T> {
             inner,
             written_type: PhantomData::<T>,
