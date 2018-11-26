@@ -1,4 +1,5 @@
 extern crate num_complex;
+extern crate csv;
 
 /// Shorthand for Complex<f32>
 /// Default sample type

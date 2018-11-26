@@ -14,8 +14,11 @@ edition = "2018"
 # these are unspecified so whoever wants to use it can specify their 
 # own version number as cargo will prefer to use that version
 num-traits = ">=0.0.0"
+# pull in serialisation for Complex<T>
 num-complex = { version = ">=0.0.0", features = ["serde"] }
+csv = "1.0.2"
 
+# optional stuff
 chfft = { optional = true, version = "0.2.4" }
 
 [dev-dependencies]

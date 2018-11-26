@@ -1,3 +1,4 @@
+use csv;
 use std::fs::{File, OpenOptions};
 use std::io;
 use std::io::{BufReader, BufWriter, Error, ErrorKind, Read, Write};
@@ -104,7 +105,18 @@ impl<T> BinaryWriter<T> {
     }
 }
 
-
+/// Returns a csv writer which can then be used to write structs which implement
+/// serde::Serialize to file
+/// Does not write or expect column headers
+pub fn csv_writer(filepath: &PathBuf) -> csv::Result<csv::Writer<File>>{
+    csv::WriterBuilder::new().has_headers(false).from_path(&filepath)
+}
+/// Return a csv reader which can then be use to read structs which implement
+/// serde::Deserialize from a file
+/// Does not write or expect column headers
+pub fn csv_reader(filepath: &PathBuf) -> csv::Result<csv::Reader<File>>{
+    csv::ReaderBuilder::new().has_headers(false).from_path(&filepath)
+}
 
 #[cfg(test)]
 mod test {
@@ -114,10 +126,10 @@ mod test {
     use std::mem;
 
     // this test requires the tmpfs because we do not want files to persist
-    // across reboots (or runs for that matter)
+    // across reboots (or (failed) runs for that matter) /tmp is perfect for that
     #[cfg(target_os = "linux")]
     #[test]
-    fn test_loader_and_storer() {
+    fn test_binary_writer_and_reader() {
         let tmpfile: PathBuf = PathBuf::from("/tmp/aether_primitives_binary_test.bin");
         //remove the tmpfile if it exists
         fs::remove_file(&tmpfile).unwrap_or(());
@@ -147,6 +159,41 @@ mod test {
         let mut r = file::binary_reader::<cf32>(&tmpfile)
             .expect("Failed to open created file for reading");
         let read = r.read_vec(seq.len()).expect("Failed to load");
+
+        assert_eq!(read, seq, "Read data and original do not match up");
+
+        fs::remove_file(&tmpfile).expect("Failed to delete tempfile");
+    }
+
+        // this test requires the tmpfs because we do not want files to persist
+    // across reboots (or (failed) runs for that matter) /tmp is perfect for that
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn test_csv_writer_and_reader() {
+        let tmpfile: PathBuf = PathBuf::from("/tmp/aether_primitives_csv_test.csv");
+        //remove the tmpfile if it exists
+        fs::remove_file(&tmpfile).unwrap_or(());
+
+        let num_elems = 200usize;
+        let seq: Vec<cf32> = (0u32..num_elems as u32)
+            .map(|x| cf32 {
+                re: x as f32,
+                im: x as f32,
+            })
+            .collect();
+        {
+            let mut w = file::csv_writer(&tmpfile)
+                .expect("failed to open for writing");
+            seq.iter().try_for_each(|x|w.serialize::<cf32>(*x))
+                .expect("Failed to write");
+            // drop the writer
+        }
+
+        let mut r = file::csv_reader(&tmpfile)
+            .expect("Failed to open created file for reading");
+        let read = r.deserialize().filter_map(|x|x.ok()).collect::<Vec<cf32>>();
+
+        assert_eq!(read.len(), seq.len(), "Read data and original length do not match up");
 
         assert_eq!(read, seq, "Read data and original do not match up");
 
