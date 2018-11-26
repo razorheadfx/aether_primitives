@@ -5,7 +5,6 @@ authors = ["Felix Girke <felix.girke@tu-dortmund.de>"]
 keywords = ["sdr","helpers","radio","complex-numbers","signal"]
 description = "Helpers for common SDR and signal generation operations"
 license = "MPL-2.0"
-license-file = "LICENSE"
 repository = "https://github.com/razorheadfx/aether_primitives"
 homepage = "https://github.com/razorheadfx/aether_primitives"
 readme = "README.md"
@@ -15,7 +14,7 @@ edition = "2018"
 # these are unspecified so whoever wants to use it can specify their 
 # own version number as cargo will prefer to use that version
 num-traits = ">=0.0.0"
-num-complex = ">=0.0.0"
+num-complex = { version = ">=0.0.0", features = ["serde"] }
 
 chfft = { optional = true, version = "0.2.4" }
 

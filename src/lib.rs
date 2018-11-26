@@ -55,6 +55,9 @@ pub mod sampling;
 /// Pseudo-Random Sequence Generation
 pub mod sequence;
 
+/// Operations on files of samples
+pub mod file;
+
 #[cfg(test)]
 mod test {
     use super::cf32;
