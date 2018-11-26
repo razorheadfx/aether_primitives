@@ -1,5 +1,7 @@
 # aether-primitives - a software radio framework powered by rust
-
+[![Latest Version](https://img.shields.io/crates/v/aether_primitives.svg)](https://crates.io/crates/aether_primitives)
+[![Documentation](https://docs.rs/aether_primitives/badge.svg)](https://docs.rs/crate/aether_primitives)
+![License](https://img.shields.io/crates/l/aether_primitives.svg)
 ## What is aether?
 Aether is designed to ease development of SDR applications by providing convenient (low-level) building blocks for common operations.  
 
