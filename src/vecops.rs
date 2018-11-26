@@ -8,7 +8,7 @@ use crate::fft::{Cfft, Fft, Scale};
 /// They are not necessarily the most performant way of doing things but
 /// they are written in idiomatic and hence safe Rust.
 ///
-/// __Example__
+/// # Example
 ///```
 ///#[macro_use]
 /// extern crate aether_primitives;

@@ -1,7 +1,7 @@
 /// Unpack an unsigned integer into a binary sequence of {0,1} u8  
 /// This function is provides initialisation values for M-sequence generators.  
 /// 
-/// __Example__
+/// # Example
 /// ```
 /// use aether_primitives::sequence;
 /// // set bits 1,3,5
@@ -28,7 +28,7 @@ pub fn expand(seed: u64, len: usize) -> Vec<u8> {
 /// may rely on values currently within the sequence,
 /// is also provided the current position to be filled by the new value  
 /// ```len``` : length of the final sequence  
-/// __Example__
+/// # Example
 /// ```
 /// use aether_primitives::sequence;
 /// // This example generates one half of the pseudo-random sequence
