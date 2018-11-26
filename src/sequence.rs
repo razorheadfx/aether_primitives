@@ -1,5 +1,6 @@
-/// Unpack an unsigned integer into a binary sequence of {0,1} u8
-/// This function is meant to provide seed/initialisation values for M-sequence generators.
+/// Unpack an unsigned integer into a binary sequence of {0,1} u8  
+/// This function is provides initialisation values for M-sequence generators.  
+/// 
 /// __Example__
 /// ```
 /// use aether_primitives::sequence;
@@ -21,29 +22,28 @@ pub fn expand(seed: u64, len: usize) -> Vec<u8> {
 
 /// Generate a M-Sequence based on initial values and a number of taps
 /// Such sequences are common building blocks for scrambling, synchronisation or modulation
-/// (Direct-Sequence Spread-Spectrum) systems.
-/// ```seed``` :
+/// (Direct-Sequence Spread-Spectrum) systems.  
+/// ```init``` : the init vector; can be derived using [expand](expand)  
 /// ```generator```: a function that generates elements,
 /// may rely on values currently within the sequence,
-// is also provided the current position to be filled by the new value
-/// ```len``` : length of the
+/// is also provided the current position to be filled by the new value  
+/// ```len``` : length of the final sequence  
 /// __Example__
 /// ```
 /// use aether_primitives::sequence;
 /// // This example generates one half of the pseudo-random sequence
 /// // used by LTE's physical layer as per 3GPP TS36.211 7.2
-/// // It is provided in the form
+/// // It is provided in the equation form:  
 /// // ``` x1(n+31) = (x1(n+3) + x1(n)) mod2 ```
-/// // Since we use an array to generate that we need to indices
-/// // Every step should yield one x(n) with n in [32..1600]
+/// // Since we use an array to generate that we need normalise the indices first.  
+/// // We achieve this by subtracting the last index of the init vector.  
 /// // ```x(n) = (x(n+3-31) + x(n-31)) mod2 ```
-/// // Thus our generator is this
+/// // Thus our generator is this:
 /// let gen = |n : usize, seq : &[u8] | (seq[n-28] + seq[n-31]) % 2;
 /// // get an init vector
 /// let mut init = sequence::expand(1,31);
 /// let seq = sequence::generate(init, gen, 1600);
 /// assert_eq!(seq.len(), 1600);
-/// // not going to check these values here
 pub fn generate(mut init: Vec<u8>, generator: impl Fn(usize, &[u8]) -> u8, len: usize) -> Vec<u8> {
     while init.len() < len {
         let next_elem = generator(init.len(), init.as_ref());
