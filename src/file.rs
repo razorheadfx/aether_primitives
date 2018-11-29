@@ -7,7 +7,7 @@ use std::mem;
 use std::path::PathBuf;
 use std::slice;
 
-/// Count the number of structs of type T which fit into the file
+/// Count the number of structs of type T which fit into the file  
 /// This assumes back-to-back placement of the structs with no padding
 pub fn count_structs_in_file<T>(filepath: &PathBuf) -> io::Result<usize> {
     filepath.metadata().and_then(|x| {
@@ -74,7 +74,9 @@ impl<T> BinaryReader<T> {
 
 }
 
-/// Create a writer for structs of type T
+/// Create a writer for structs of type T  
+/// This creates the requested file if it does not exist
+/// or truncates if it does.
 pub fn binary_writer<T>(filepath: &PathBuf) -> io::Result<BinaryWriter<T>> {
         OpenOptions::new()
             .read(false)
@@ -107,13 +109,13 @@ impl<T> BinaryWriter<T> {
 }
 
 /// Returns a csv writer which can then be used to write structs which implement
-/// serde::Serialize to file
+/// serde::Serialize to file  
 /// Does not write or expect column headers
 pub fn csv_writer(filepath: &PathBuf) -> csv::Result<csv::Writer<File>>{
     csv::WriterBuilder::new().has_headers(false).from_path(&filepath)
 }
 /// Return a csv reader which can then be use to read structs which implement
-/// serde::Deserialize from a file
+/// serde::Deserialize from a file  
 /// Does not write or expect column headers
 pub fn csv_reader(filepath: &PathBuf) -> csv::Result<csv::Reader<File>>{
     csv::ReaderBuilder::new().has_headers(false).from_path(&filepath)
