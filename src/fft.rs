@@ -145,9 +145,104 @@ mod ch {
 
 }
 
+
+/// TODO: integrate rustfft
+#[cfg(feature = "fft_rustfft")]
+pub use self::ru::Cfft;
+
+/// TODO: integrate rustfft
+#[cfg(feature = "fft_rustfft")]
+mod ru {
+    extern crate rustfft;
+    use super::{Fft, Scale};
+    use std::sync::Arc;
+
+    use crate::cf32;
+    use crate::vecops::VecOps;
+    use rustfft::{FFTplanner, FFT};
+
+    pub struct Cfft {
+        // unfortunately we need to use a smart pointer here
+        fwd: Arc<FFT<f32>>,
+        // unfortunately we need to use a smart pointer here
+        bwd: Arc<FFT<f32>>,
+        tmp: Vec<cf32>,
+        len: usize,
+    }
+
+    impl Cfft {
+        pub fn with_len(len: usize) -> Cfft {
+            let fwd = FFTplanner::new(true).plan_fft(len);
+
+            let bwd = FFTplanner::new(false).plan_fft(len);
+
+            Cfft {
+                fwd: fwd,
+                bwd: bwd,
+                // TODO: use vec_align
+                tmp: vec![cf32::default(); len],
+                len: len,
+            }
+        }
+    }
+
+    impl Fft for Cfft {
+        fn fwd(&mut self, input: &[cf32], output: &mut [cf32], s: Scale) {
+            assert_eq!(
+                self.len,
+                input.len(),
+                "Input and FFT must be the same length"
+            );
+            self.tmp.vec_clone(&input);
+            self.fwd.process(&mut self.tmp[..], output);
+            s.scale(output);
+        }
+
+        fn bwd(&mut self, input: &[cf32], output: &mut [cf32], s: Scale) {
+            assert_eq!(
+                self.len,
+                input.len(),
+                "Input and FFT must be the same length"
+            );
+            self.tmp.vec_clone(&input);
+            self.bwd.process(&mut self.tmp[..], output);
+            s.scale(output);
+        }
+
+        fn ifwd(&mut self, input: &mut [cf32], s: Scale) {
+            assert_eq!(
+                self.len,
+                input.len(),
+                "Input and FFT must be the same length"
+            );
+            warn!("RustFFT does not support in-place transforms. This will involve an additional copy step.");
+            self.tmp.vec_clone(&input);
+            self.fwd.process(&mut self.tmp[..], input);
+            s.scale(input);
+        }
+
+        fn ibwd(&mut self, input: &mut [cf32], s: Scale) {
+            assert_eq!(
+                self.len,
+                input.len(),
+                "Input and FFT must be the same length"
+            );
+            warn!("RustFFT does not support in-place transforms. This will involve an additional copy step.");
+            self.tmp.vec_clone(&input);
+            self.fwd.process(&mut self.tmp[..], input);
+            s.scale(input);
+        }
+
+        fn len(&self) -> usize {
+            self.len
+        }
+    }
+
+}
+
 #[cfg(test)]
 mod test {
-    use super::Scale;
+    use crate::fft::Scale;
     use crate::cf32;
 
     #[test]
