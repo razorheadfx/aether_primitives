@@ -17,8 +17,9 @@ num-traits  = ">=0.0.0"
 # pull in serialisation for Complex<T>
 num-complex = { version = ">=0.0.0", features = ["serde"] }
 csv         = "1.0.2"
-# floating point equality asserts with an epsilon
+# f32/f64 equality assertion
 assert_approx_eq = "1.1.0"
+rand = "0.6.1"
 
 # optional stuff
 chfft   = { optional = true, version = "0.2.4" }

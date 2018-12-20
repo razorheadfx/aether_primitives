@@ -50,17 +50,19 @@ Hence the version is not pinned as cargo will usually try to build the same vers
     - Zero entire vector, copy elements over from another vector
     - FEATURE: Perform (i)FFTs using new or existing fourier transform instance (enabled via ```fft_chfft```)
 - Sequence: Helpers for binary pseudo-random sequence generation (M-Sequences)
-    - expand: Expand a seed value into an initialisation vector
-    - generate: Generate
+    - expand: Expand a seed value into an initialisation vector for a Pseudo-random sequence
+    - generate: Generate a pseudo random sequence
 - Sampling
     - linear interpolation
     - even downsampling
 - FFT
     - perform fast fourier transforms (forward/backward) on slices/vecs of cf32 with different scaling factors
-- File: Operations for handling files of samples/other data
+- File
     - binary file writing and reading for arbitrary structs
     - csv file writing and reading for arbitrary structs
-- Utils:
+- Channel
+    - Noise generation
+- Utils
     - Conversion from and to DB
 - Benches: benchmarks for most operations in aether using the criterion.rs framework
     - downsampling, interpolation, fft

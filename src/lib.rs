@@ -2,6 +2,9 @@ extern crate assert_approx_eq;
 extern crate num_complex;
 extern crate csv;
 
+#[cfg(feature = "plot")]
+extern crate gnuplot;
+
 /// Shorthand for Complex<f32>
 /// Default sample type
 /// This type is repr(C), thus 2 f32s back-to-back equivalent to [f32;2]
@@ -59,6 +62,9 @@ pub mod sequence;
 
 /// Operations on files of samples
 pub mod file;
+
+/// Helpers for dealing with channels and noise
+pub mod channel;
 
 /// Miscelaneous Helpers
 pub mod util;
