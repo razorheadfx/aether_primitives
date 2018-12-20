@@ -23,6 +23,7 @@ rand = "0.6.1"
 
 # optional stuff
 chfft   = { optional = true, version = "0.2.4" }
+gnuplot = { optional = true, version = "0.0.26" }
 
 [dev-dependencies]
 criterion = "0.2"

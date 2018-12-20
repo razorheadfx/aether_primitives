@@ -64,6 +64,8 @@ Hence the version is not pinned as cargo will usually try to build the same vers
     - Noise generation
 - Utils
     - Conversion from and to DB
+    - Plotting (via the ```plot``` requires an installed version of```gnuplot```
+        - Constellation diagram
 - Benches: benchmarks for most operations in aether using the criterion.rs framework
     - downsampling, interpolation, fft
 
