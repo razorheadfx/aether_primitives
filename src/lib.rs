@@ -1,3 +1,4 @@
+extern crate assert_approx_eq;
 extern crate num_complex;
 extern crate csv;
 
@@ -59,6 +60,9 @@ pub mod sequence;
 /// Operations on files of samples
 pub mod file;
 
+/// Miscelaneous Helpers
+pub mod util;
+
 #[cfg(test)]
 mod test {
     use super::cf32;
@@ -100,8 +104,8 @@ mod test {
         assert_evm!(act, refr, (0.0));
     }
 
-    #[test]
-    fn vec_align() {
+    // TODO: impl
+    fn _vec_align() {
         let _v = vec_align![cf32::default(); 2048];
     }
 

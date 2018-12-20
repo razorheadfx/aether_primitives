@@ -13,24 +13,27 @@ edition = "2018"
 [dependencies]
 # these are unspecified so whoever wants to use it can specify their 
 # own version number as cargo will prefer to use that version
-num-traits = ">=0.0.0"
+num-traits  = ">=0.0.0"
 # pull in serialisation for Complex<T>
 num-complex = { version = ">=0.0.0", features = ["serde"] }
-csv = "1.0.2"
+csv         = "1.0.2"
+# floating point equality asserts with an epsilon
+assert_approx_eq = "1.1.0"
 
 # optional stuff
-chfft = { optional = true, version = "0.2.4" }
+chfft   = { optional = true, version = "0.2.4" }
 
 [dev-dependencies]
 criterion = "0.2"
 
 [[bench]]
-name = "benches"
+name    = "benches"
 harness = false
 
 [features]
-default = []
+default   = []
 fft_chfft = ["chfft", "fft"]
+plot      = ["gnuplot"]
 
 # enables fft ops on vecops
 fft = []

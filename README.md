@@ -60,8 +60,10 @@ Hence the version is not pinned as cargo will usually try to build the same vers
 - File: Operations for handling files of samples/other data
     - binary file writing and reading for arbitrary structs
     - csv file writing and reading for arbitrary structs
+- Utils:
+    - Conversion from and to DB
 - Benches: benchmarks for most operations in aether using the criterion.rs framework
-    - downsampling, interpolation, fft, 
+    - downsampling, interpolation, fft
 
 ## TODO
 - [ ] Pull out choice of FFT ([RustFFT](https://github.com/awelkie/RustFFT) vs [chfft](https://github.com/chalharu/chfft)) via wrappers
