@@ -1,6 +1,6 @@
 /// Unpack an unsigned integer into a binary sequence of {0,1} u8  
 /// This function is provides initialisation values for M-sequence generators.  
-/// 
+///
 /// # Example
 /// ```
 /// use aether_primitives::sequence;

@@ -15,7 +15,7 @@ pub fn count_structs_in_file<T>(filepath: &PathBuf) -> io::Result<usize> {
         let s = mem::size_of::<T>();
         if len % s == 0 {
             Ok(len / s)
-        }else {
+        } else {
             Err(Error::new(
                 ErrorKind::UnexpectedEof,
                 "File does not contain an integer number of the requested struct",
@@ -70,20 +70,18 @@ impl<T> BinaryReader<T> {
         }
         Ok(into)
     }
-
-
 }
 
 /// Create a writer for structs of type T  
 /// This creates the requested file if it does not exist
 /// or truncates if it does.
 pub fn binary_writer<T>(filepath: &PathBuf) -> io::Result<BinaryWriter<T>> {
-        OpenOptions::new()
-            .read(false)
-            .write(true)
-            .truncate(true)
-            .create(true)
-            .open(filepath)
+    OpenOptions::new()
+        .read(false)
+        .write(true)
+        .truncate(true)
+        .create(true)
+        .open(filepath)
         .map(BufWriter::new)
         .map(|inner| BinaryWriter::<T> {
             inner,
@@ -111,22 +109,26 @@ impl<T> BinaryWriter<T> {
 /// Returns a csv writer which can then be used to write structs which implement
 /// serde::Serialize to file  
 /// Does not write or expect column headers
-pub fn csv_writer(filepath: &PathBuf) -> csv::Result<csv::Writer<File>>{
-    csv::WriterBuilder::new().has_headers(false).from_path(&filepath)
+pub fn csv_writer(filepath: &PathBuf) -> csv::Result<csv::Writer<File>> {
+    csv::WriterBuilder::new()
+        .has_headers(false)
+        .from_path(&filepath)
 }
 /// Return a csv reader which can then be use to read structs which implement
 /// serde::Deserialize from a file  
 /// Does not write or expect column headers
-pub fn csv_reader(filepath: &PathBuf) -> csv::Result<csv::Reader<File>>{
-    csv::ReaderBuilder::new().has_headers(false).from_path(&filepath)
+pub fn csv_reader(filepath: &PathBuf) -> csv::Result<csv::Reader<File>> {
+    csv::ReaderBuilder::new()
+        .has_headers(false)
+        .from_path(&filepath)
 }
 
 #[cfg(test)]
 mod test {
     use crate::{cf32, file};
-    use std::path::PathBuf;
     use std::fs;
     use std::mem;
+    use std::path::PathBuf;
 
     // this test requires the tmpfs because we do not want files to persist
     // across reboots (or (failed) runs for that matter) /tmp is perfect for that
@@ -145,10 +147,8 @@ mod test {
             })
             .collect();
         {
-            let mut w = file::binary_writer::<cf32>(&tmpfile)
-                .expect("failed to open for writing");
-            w.write(seq.as_slice())
-                .expect("Failed to write");
+            let mut w = file::binary_writer::<cf32>(&tmpfile).expect("failed to open for writing");
+            w.write(seq.as_slice()).expect("Failed to write");
             // drop the writer
         }
 
@@ -159,8 +159,8 @@ mod test {
             "File size does not match up with written number of elements"
         );
 
-        let mut r = file::binary_reader::<cf32>(&tmpfile)
-            .expect("Failed to open created file for reading");
+        let mut r =
+            file::binary_reader::<cf32>(&tmpfile).expect("Failed to open created file for reading");
         let read = r.read_vec(seq.len()).expect("Failed to load");
 
         assert_eq!(read, seq, "Read data and original do not match up");
@@ -168,7 +168,7 @@ mod test {
         fs::remove_file(&tmpfile).expect("Failed to delete tempfile");
     }
 
-        // this test requires the tmpfs because we do not want files to persist
+    // this test requires the tmpfs because we do not want files to persist
     // across reboots (or (failed) runs for that matter) /tmp is perfect for that
     #[cfg(target_os = "linux")]
     #[test]
@@ -185,18 +185,24 @@ mod test {
             })
             .collect();
         {
-            let mut w = file::csv_writer(&tmpfile)
-                .expect("failed to open for writing");
-            seq.iter().try_for_each(|x|w.serialize::<cf32>(*x))
+            let mut w = file::csv_writer(&tmpfile).expect("failed to open for writing");
+            seq.iter()
+                .try_for_each(|x| w.serialize::<cf32>(*x))
                 .expect("Failed to write");
             // drop the writer
         }
 
-        let mut r = file::csv_reader(&tmpfile)
-            .expect("Failed to open created file for reading");
-        let read = r.deserialize().filter_map(|x|x.ok()).collect::<Vec<cf32>>();
+        let mut r = file::csv_reader(&tmpfile).expect("Failed to open created file for reading");
+        let read = r
+            .deserialize()
+            .filter_map(|x| x.ok())
+            .collect::<Vec<cf32>>();
 
-        assert_eq!(read.len(), seq.len(), "Read data and original length do not match up");
+        assert_eq!(
+            read.len(),
+            seq.len(),
+            "Read data and original length do not match up"
+        );
 
         assert_eq!(read, seq, "Read data and original do not match up");
 

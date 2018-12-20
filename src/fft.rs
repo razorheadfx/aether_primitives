@@ -70,9 +70,9 @@ mod ch {
     extern crate chfft;
     use super::{Fft, Scale};
 
-    use chfft::CFft1D;
     use crate::cf32;
     use crate::vecops::VecOps;
+    use chfft::CFft1D;
 
     pub struct Cfft {
         fft: CFft1D<f32>,
@@ -144,7 +144,6 @@ mod ch {
     }
 
 }
-
 
 /// TODO: integrate rustfft
 #[cfg(feature = "fft_rustfft")]
@@ -242,8 +241,8 @@ mod ru {
 
 #[cfg(test)]
 mod test {
-    use crate::fft::Scale;
     use crate::cf32;
+    use crate::fft::Scale;
 
     #[test]
     fn scale() {

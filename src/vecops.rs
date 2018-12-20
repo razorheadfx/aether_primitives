@@ -186,7 +186,6 @@ macro_rules! impl_vec_ops {
                 let mut fft = Cfft::with_len(self.len());
                 fft.ifwd(&mut self[..], scale);
                 self
-
             }
 
             #[cfg(feature = "fft")]
@@ -463,13 +462,13 @@ mod test {
     #[test]
     #[cfg(feature = "fft")]
     fn vec_rfft() {
-        use crate::fft::{Scale, Cfft};
+        use crate::fft::{Cfft, Scale};
         let v = vec![cf32::new(1.0, 1.0); 100];
         let mut c = v.clone();
         let mut fft = Cfft::with_len(100);
-        c.vec_rfft(&mut fft, Scale::None).vec_rifft(&mut fft, Scale::None);
+        c.vec_rfft(&mut fft, Scale::None)
+            .vec_rifft(&mut fft, Scale::None);
         assert_evm!(c, v, -80.0);
     }
-
 
 }
