@@ -62,7 +62,7 @@ pub trait Fft {
 }
 
 #[cfg(feature = "fft_chfft")]
-/// Complex fft
+/// Complex fft using Chalharu's Fastest Fourier Transform
 pub use self::ch::Cfft;
 
 #[cfg(feature = "fft_chfft")]
@@ -145,7 +145,7 @@ mod ch {
 
 }
 
-/// TODO: integrate rustfft
+/// Complex fft using Allen Welkie's Rustfft
 #[cfg(feature = "fft_rustfft")]
 pub use self::ru::Cfft;
 

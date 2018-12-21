@@ -55,17 +55,22 @@ Hence the version is not pinned as cargo will usually try to build the same vers
 - Sampling
     - linear interpolation
     - even downsampling
-- FFT
+- FFT: FEATURE ```fft_chfft```
     - perform fast fourier transforms (forward/backward) on slices/vecs of cf32 with different scaling factors
+    - Supported fft implementations: [chfft](https://github.com/chalharu/chfft)
 - File
     - binary file writing and reading for arbitrary structs
     - csv file writing and reading for arbitrary structs
 - Channel
     - Noise generation
+- Plot: FEATURE ```plot```; requires an installed version of ```gnuplot```
+    - Constellation diagram
+    - Time sequence plot
+    - Comparison plot of two sequences
+    - Waterfall plot with a given fft size (requires ```fft_chfft```)
 - Utils
-    - Conversion from and to DB
-    - Plotting (via the ```plot``` requires an installed version of```gnuplot```
-        - Constellation diagram
+    - Conversion from and to dB
+
 - Benches: benchmarks for most operations in aether using the criterion.rs framework
     - downsampling, interpolation, fft
 
@@ -75,21 +80,18 @@ Hence the version is not pinned as cargo will usually try to build the same vers
     - [ ] Implement wrapper for RustFFT
          - Issue: cf32 incompatible with RustFFTs version of cf32 (maybe add some shady casts since the structs are the same)
 - [ ] Add vec_align! macro to create vecs aligned for SIMD instructions
-- [ ] Add Fixed-size cf32 Vecs
+- [ ] Ungrowable Vecs
     - maybe derefs to slice for convenience
 - [ ] Add VecStats (f32,cf32)
     - Min(index),Max(index),Mean(index),Power
 - [ ] Add VecOps Features
     - [x] FFTs : vec_fft,vec_ifft, vec_rifft, vec_rfft, vec_rifft; rifft/rfft reuse an existing instance of fft::Cfft currently supported by building with ```fft_chfft``` enabled.  
-    - Use [faster](https://github.com/AdamNiederer/faster) once it works on stable again
+    - [ ] Feature: use [faster](https://github.com/AdamNiederer/faster) once it works on stable again
     - [ ] Feature: use [VOLK](https://libvolk.org) for ops
         - Add tests to ensure generated code is correctly aligned - should be ensured since cf32 (2x4 bytes) is 8 bytes. VOLK [prefers](https://libvolk.org/doxygen/concepts_terms_and_techniques.html) 32byte alignment /libfftw [prefers](http://www.fftw.org/fftw3_doc/SIMD-alignment-and-fftw_005fmalloc.html) 16 byte alignment
         - must also hook into the vec_align macro
 - [ ] Add Correlation by Freq. Domain Convolution
 - [ ] Add FIR
-- [x] Add Reading and writing of files (esp. cf32)
-    - [x] binary
-    - [x] csv
 
 ## License
 [Mozilla Public License 2.0](LICENSE)

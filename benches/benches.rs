@@ -26,7 +26,7 @@ fn mul(c: &mut Criterion) {
 fn scale(c: &mut Criterion) {
     c.bench_function("VecOps.vec_scale", |b| {
         b.iter_with_setup(
-            ||vec![cf32::new(1.0, 1.0); 2048],
+            || vec![cf32::new(1.0, 1.0); 2048],
             |mut v| {
                 v.vec_scale(2.0);
             },

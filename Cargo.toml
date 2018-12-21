@@ -1,41 +1,41 @@
 [package]
-name = "aether_primitives"
-version = "0.1.0"
-authors = ["Felix Girke <felix.girke@tu-dortmund.de>"]
-keywords = ["sdr","helpers","radio","complex-numbers","signal"]
+name        = "aether_primitives"
+version     = "0.1.0"
+authors     = ["Felix Girke <felix.girke@tu-dortmund.de>"]
+keywords    = ["sdr","helpers","radio","complex-numbers","signal"]
 description = "Helpers for common SDR and signal generation operations"
-license = "MPL-2.0"
-repository = "https://github.com/razorheadfx/aether_primitives"
-homepage = "https://github.com/razorheadfx/aether_primitives"
-readme = "README.md"
-edition = "2018"
+license     = "MPL-2.0"
+repository  = "https://github.com/razorheadfx/aether_primitives"
+homepage    = "https://github.com/razorheadfx/aether_primitives"
+readme      = "README.md"
+edition     = "2018"
 
 [dependencies]
 # these are unspecified so whoever wants to use it can specify their 
 # own version number as cargo will prefer to use that version
-num-traits  = ">=0.0.0"
+num-traits       = ">=0.0.0"
 # pull in serialisation for Complex<T>
-num-complex = { version = ">=0.0.0", features = ["serde"] }
-csv         = "1.0.2"
+num-complex      = { version = ">=0.0.0", features = ["serde"] }
+csv              = "1.0.2"
 # f32/f64 equality assertion
 assert_approx_eq = "1.1.0"
-rand = "0.6.1"
+rand             = "0.6.1"
 
 # optional stuff
-chfft   = { optional = true, version = "0.2.4" }
-gnuplot = { optional = true, version = "0.0.26" }
+chfft            = { optional = true, version = "0.2.4" }
+gnuplot          = { optional = true, version = "0.0.26" }
 
 [dev-dependencies]
-criterion = "0.2"
+criterion        = "0.2"
 
 [[bench]]
-name    = "benches"
-harness = false
+name             = "benches"
+harness          = false
 
 [features]
-default   = []
-fft_chfft = ["chfft", "fft"]
-plot      = ["gnuplot"]
+default          = []
+fft_chfft        = ["chfft", "fft"]
+plot             = ["gnuplot"]
 
 # enables fft ops on vecops
 fft = []

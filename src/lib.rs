@@ -1,6 +1,6 @@
 extern crate assert_approx_eq;
-extern crate num_complex;
 extern crate csv;
+extern crate num_complex;
 
 #[cfg(feature = "plot")]
 extern crate gnuplot;
@@ -65,6 +65,12 @@ pub mod file;
 
 /// Helpers for dealing with channels and noise
 pub mod channel;
+
+/// Uses ```gnuplot``` to fork off threads to plot given data.  
+/// If no filename is given to plot functions gnuplot will open
+/// a window to display the plot.
+#[cfg(feature = "plot")]
+pub mod plot;
 
 /// Miscelaneous Helpers
 pub mod util;

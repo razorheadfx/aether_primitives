@@ -32,51 +32,6 @@ impl DB {
     }
 }
 
-#[cfg(feature = "plot")]
-/// Uses
-pub mod plot {
-    use crate::cf32;
-    use crate::util::DB;
-    use gnuplot::{
-        AutoOption, AxesCommon, Caption, Color, Coordinate, DashType, Figure, LegendOption,
-        LineStyle,
-    };
-
-    pub fn constellation(symbols: &[cf32], title: &str, db: bool, file: Option<&str>) {
-        let mut fg = Figure::new();
-        let mut re = symbols.iter().map(|c| c.re).collect::<Vec<_>>();
-        let mut im = symbols.iter().map(|c| c.im).collect::<Vec<_>>();
-
-        let capt = if db {
-            re.iter_mut().for_each(|v| *v = DB::from(*v).db() as f32);
-            im.iter_mut().for_each(|v| *v = DB::from(*v).db() as f32);
-            Caption("Constellation [dB]")
-        } else {
-            Caption("Constellation")
-        };
-
-        fg.axes2d()
-            .points(&re, &im, &[capt, Color("blue")])
-            .set_legend(
-                Coordinate::Graph(1.0),
-                Coordinate::Graph(1.0),
-                &[LegendOption::Title(title)],
-                &[],
-            );
-        match file {
-            Some(filename) => {
-                let _ = fg.set_terminal("pdfcairo", filename);
-            }
-            None => (),
-        };
-        fg.show();
-    }
-
-    // TODO: add eye diagram
-
-    // TODO: add time plot
-}
-
 #[cfg(test)]
 mod test {
     use crate::util::DB;
