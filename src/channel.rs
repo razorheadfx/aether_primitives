@@ -5,7 +5,7 @@ pub mod noise {
     use rand::prelude::*;
     use rand::SeedableRng;
 
-    const DEFAULT_RNG_SEED: u64 = 0815;
+    const DEFAULT_RNG_SEED: u64 = 815;
 
     /// Creates an AWGN generator with default seed and a noise power of 1
     pub fn generator() -> Awgn {
@@ -37,7 +37,7 @@ pub mod noise {
         /// Initalise an AWGN with given power (Standard Deviation) and RNG seed
         fn new(power: f32, seed: u64) -> Awgn {
             Awgn {
-                power: power,
+                power,
                 rng: SeedableRng::seed_from_u64(seed),
                 dist: Normal::new(0f64, 1f64),
                 scale: power.sqrt(),

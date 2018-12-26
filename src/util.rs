@@ -17,25 +17,28 @@ impl<T> From<T> for DB
 where
     T: Into<f64>,
 {
+    #[inline]
     fn from(ratio: T) -> Self {
         DB(10f64 * ratio.into().log(10f64))
     }
 }
 
 impl DB {
-    pub fn db(&self) -> f64 {
+    #[inline]
+    pub fn db(self) -> f64 {
         self.0
     }
 
-    pub fn ratio(&self) -> f64 {
+    #[inline]
+    pub fn ratio(self) -> f64 {
         10f64.powf(self.0 / 10f64)
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::util::DB;
     use assert_approx_eq::assert_approx_eq;
+    use crate::util::DB;
 
     #[test]
     fn db_to_ratio() {

@@ -70,9 +70,9 @@ mod ch {
     extern crate chfft;
     use super::{Fft, Scale};
 
+    use chfft::CFft1D;
     use crate::cf32;
     use crate::vecops::VecOps;
-    use chfft::CFft1D;
 
     pub struct Cfft {
         fft: CFft1D<f32>,
@@ -176,11 +176,11 @@ mod ru {
             let bwd = FFTplanner::new(false).plan_fft(len);
 
             Cfft {
-                fwd: fwd,
-                bwd: bwd,
+                fwd,
+                bwd,
                 // TODO: use vec_align
                 tmp: vec![cf32::default(); len],
-                len: len,
+                len,
             }
         }
     }
