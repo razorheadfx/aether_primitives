@@ -37,8 +37,8 @@ impl DB {
 
 #[cfg(test)]
 mod test {
-    use assert_approx_eq::assert_approx_eq;
     use crate::util::DB;
+    use assert_approx_eq::assert_approx_eq;
 
     #[test]
     fn db_to_ratio() {
