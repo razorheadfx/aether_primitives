@@ -66,6 +66,11 @@ pub mod file;
 /// Helpers for dealing with channels and noise
 pub mod channel;
 
+/// A minimal, OpenGl accelerated UI based on [piston](https://github.com/pistondevelopers/piston)  
+/// Supports waterfall, time domain and eye diagrams
+#[cfg(feature = "gui")]
+pub mod gui;
+
 /// Uses ```gnuplot``` to fork off threads to plot given data.  
 /// If no filename is given to plot functions gnuplot will open
 /// a window to display the plot.

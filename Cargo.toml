@@ -43,7 +43,7 @@ harness          = false
 default          = []
 fft_chfft        = ["chfft", "fft"]
 plot             = ["gnuplot"]
-gui               = ["piston", "piston2d-graphics", "pistoncore-glutin_window", "piston2d-opengl_graphics"]
+gui              = ["piston", "piston2d-graphics", "pistoncore-glutin_window", "piston2d-opengl_graphics"]
 
 # enables fft ops on vecops
 fft = []
