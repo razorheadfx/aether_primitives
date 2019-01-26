@@ -19,13 +19,17 @@ pub mod noise {
 
     /// Convenience function which generates a vector of noise of given length and noise power
     pub fn make(len: usize, power: f32) -> std::vec::Vec<cf32> {
-        let gen = with(power, DEFAULT_RNG_SEED);
         let mut noise = Vec::with_capacity(len);
-        gen.take(len).for_each(|c| noise.push(c));
+        with(power, DEFAULT_RNG_SEED).iter()
+            .take(len)
+            .for_each(|c| noise.push(c));
         noise
     }
 
+
+
     /// An AWGN Sampler
+    #[derive(Debug)]
     pub struct Awgn {
         pub power: f32,
         pub rng: StdRng,
@@ -44,6 +48,15 @@ pub mod noise {
             }
         }
 
+        #[inline(always)]
+        fn next(&mut self) -> cf32{
+            cf32 {
+                re: self.rng.sample(self.dist) as f32 * self.scale,
+                im: self.rng.sample(self.dist) as f32 * self.scale,
+            }
+
+        }
+
         /// Change the noise power
         pub fn set_power(&mut self, power: f32) {
             self.power = power;
@@ -53,25 +66,33 @@ pub mod noise {
         /// Overlay the given signal with noise from this generator
         pub fn apply(&mut self, signal: &mut [cf32]) {
             let p = self.power.sqrt();
-            signal.iter_mut().zip(self).for_each(|(s, n)| *s += n * p);
+            signal.iter_mut().zip(self.iter()).for_each(|(s, n)| *s += n * p);
         }
 
         /// Fill a vector up to capacity with noise from this generator
         pub fn fill(&mut self, target: &mut Vec<cf32>) {
             while target.len() < target.capacity() {
-                target.push(self.next().unwrap())
+                target.push(self.next())
+            }
+        }
+
+        pub fn iter(&mut self) -> NoiseIter{
+            NoiseIter{
+                noisegen : self
             }
         }
     }
 
-    impl Iterator for Awgn {
+    #[derive(Debug)]
+    pub struct NoiseIter<'a>{
+        noisegen : &'a mut Awgn
+    }
+
+    impl <'a>Iterator for NoiseIter<'a> {
         type Item = cf32;
 
         fn next(&mut self) -> Option<Self::Item> {
-            Some(cf32 {
-                re: self.rng.sample(self.dist) as f32 * self.scale,
-                im: self.rng.sample(self.dist) as f32 * self.scale,
-            })
+            Some(self.noisegen.next())
         }
     }
 }
