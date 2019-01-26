@@ -57,6 +57,17 @@ pub trait Fft {
     /// Overwrites the input with the output of the transform
     fn ibwd(&mut self, input: &mut [cf32], s: Scale);
 
+    /// temporary FFT (Forward) from ```input```
+    /// Does not modify contents of input and then grants read access to
+    /// the internal temp buffer.
+    fn tfwd(&mut self, input: &[cf32], s: Scale) -> &[cf32];
+
+    /// temporary iFFT (Backward) from ```input```
+    /// Does not modify contents of input and then grants read access to
+    /// the internal temp buffer.
+    fn tbwd(&mut self, input: &[cf32], s: Scale) -> &[cf32];
+
+
     /// Retrieve the (fixed) size (number of bins) this is generated for
     fn len(&self) -> usize;
 }
@@ -137,6 +148,31 @@ mod ch {
             self.fft.backward0i(input);
             s.scale(input);
         }
+
+        fn tfwd(&mut self, input: &[cf32], s: Scale) -> &[cf32] {
+            assert_eq!(
+                self.len,
+                input.len(),
+                "Input and FFT must be the same length"
+            );
+            self.tmp.vec_clone(&input);
+            self.fft.forward0i(&mut self.tmp);
+            s.scale(self.tmp.as_mut());
+            &self.tmp[..]
+        }
+
+        fn tbwd(&mut self, input: &[cf32], s: Scale)-> &[cf32] {
+            assert_eq!(
+                self.len,
+                input.len(),
+                "Input and FFT must be the same length"
+            );
+            self.tmp.vec_clone(&input);
+            self.fft.backward0i(&mut self.tmp);
+            s.scale(self.tmp.as_mut());
+            &self.tmp[..]
+        }
+
 
         fn len(&self) -> usize {
             self.len
