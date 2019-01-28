@@ -13,14 +13,14 @@ pub mod noise {
     }
 
     /// Creates an AWGN generator with the given power and seed value
-    pub fn with(power: f32, seed: u64) -> Awgn {
+    pub fn new(power: f32, seed: u64) -> Awgn {
         Awgn::new(power, seed)
     }
 
     /// Convenience function which generates a vector of noise of given length and noise power
     pub fn make(len: usize, power: f32) -> std::vec::Vec<cf32> {
         let mut noise = Vec::with_capacity(len);
-        with(power, DEFAULT_RNG_SEED).iter()
+        Awgn::new(power, DEFAULT_RNG_SEED).iter()
             .take(len)
             .for_each(|c| noise.push(c));
         noise
@@ -39,7 +39,7 @@ pub mod noise {
 
     impl Awgn {
         /// Initalise an AWGN with given power (Standard Deviation) and RNG seed
-        fn new(power: f32, seed: u64) -> Awgn {
+        pub fn new(power: f32, seed: u64) -> Awgn {
             Awgn {
                 power,
                 rng: SeedableRng::seed_from_u64(seed),
