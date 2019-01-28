@@ -12,6 +12,7 @@ fn main(){
         use aether_primitives::cf32;
         use aether_primitives::channel::noise;
         use aether_primitives::gui;
+        use aether_primitives::util::DB;
         use std::sync::mpsc;
         use std::time::{Duration, SystemTime};
         use std::thread;
@@ -22,10 +23,10 @@ fn main(){
 
         let (s,r) = mpsc::channel::<Vec<cf32>>();
 
-        let w = gui::waterfall(bins);
+        let w = gui::waterfall(bins,Some((-50.0,10.0)));
         let h = gui::launch(r, w);
 
-        let mut noise = noise::generator();
+        let mut noise = noise::new(DB(-0.0).ratio() as f32 ,815);
 
         let duration = 10;
         let start = SystemTime::now();

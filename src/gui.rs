@@ -2,6 +2,7 @@ use crate::cf32;
 
 #[cfg(feature = "fft_chfft")]
 use crate::fft::{Scale, Fft, Cfft};
+use crate::util::DB;
 
 extern crate glutin_window;
 extern crate graphics;
@@ -25,7 +26,8 @@ pub trait Liveplot<I>{
 }
 
 /// Create a simple waterfall plot  
-/// With the given number of FFT bins
+/// With the given number of FFT bins and optional minimum and maximum values (in dB) for the colour scale
+/// 
 /// # Example
 ///```
 /// use aether_primitives::cf32;
@@ -34,7 +36,7 @@ pub trait Liveplot<I>{
 /// use std::sync::mpsc;
 /// let bins = 512;
 /// let (s, r) = mpsc::channel::<Vec<cf32>>();
-/// let waterfall = gui::waterfall(bins);
+/// let waterfall = gui::waterfall(bins, Some((-20.0,20.0)));
 /// 
 /// // this would spawn of the gui thread
 /// // this either stops if the sender is dropped
@@ -52,11 +54,20 @@ pub trait Liveplot<I>{
 /// 
 ///```
 #[cfg(feature = "fft_chfft")]
-pub fn waterfall(ncol : usize) -> Waterfall{
+pub fn waterfall(ncol : usize, minmax : Option<(f64,f64)>) -> Waterfall{
     const NROWS : usize = 200;
+    // minimum value in db
+    const MIN : f64 = -130.0;
+    // maximum value in db
+    const MAX : f64 = 0.0;
+
+    let (min,max) = minmax.unwrap_or((MIN,MAX));
+
     Waterfall {
         nrows : NROWS,
         ncols : ncol,
+        min : min,
+        max : max,
         fft : Cfft::with_len(ncol),
         all_rows: vec![],
     }
@@ -101,7 +112,10 @@ pub fn launch<I: Sync + Send + 'static, L: Liveplot<I> + Send + 'static>(input :
 pub struct Waterfall {
     nrows : usize,
     ncols : usize,
+    min : f64,
+    max : f64,
     fft : crate::fft::Cfft,
+    /// stores the db value adjusted for the min/max range
     all_rows: Vec<Vec<f32>>,
 }
 
@@ -110,9 +124,9 @@ impl Liveplot<cf32> for Waterfall{
         // helpers
         use graphics::{clear,Colored,rectangle, Transformed};
 
-        // use cyan for 0 and 
+        // use cyan for 0 and red for 100% (i.e. half a rotation in the HSL colour space)
         const CYAN: [f32; 4] = [0.0, 1.0, 1.0, 1.0];
-        //
+        let colour = |v| CYAN.hue_deg(v * 0.5 *360.0);
 
         let rowheight: f64 = args.height / self.nrows as f64;
         let colwidth: f64 = args.width / self.ncols as f64;
@@ -133,7 +147,7 @@ impl Liveplot<cf32> for Waterfall{
                 row.iter().enumerate()
                     .for_each(|(colnum, v)| {
                         rectangle(
-                            CYAN.hue_deg(v*0.5*360f32), // hue_deg is a function of the graphics::Colored trait
+                            colour(v),
                             [0.0, 0.0, colwidth, rowheight], //this defines a rectangle x,y,w,h
                             c.transform.trans(colnum as f64 * colwidth, row_offset), // this generates a 2x2 transform matrix
                             gl,
@@ -156,10 +170,26 @@ impl Liveplot<cf32> for Waterfall{
         let mid = v.len()/2;
         let (front, end) = v.split_at_mut(mid);
 
-        // manually mirrors
+        // scale db value to displayed range
+        let into_range = {
+            let min = self.min;
+            let max = self.max;
+            // crop the value into the display range
+            let crop = move |db| match db{
+                x if x < min => min,
+                x if x > max => max,
+                _ => db 
+            };
+            // scale the value within the display range
+            move |db|(-min-crop(db))/(max-min)
+        };
+
         self.fft.tfwd(&new_row, Scale::SN).iter()
-            .zip(end.iter_mut().chain(front.iter_mut()))
-            .for_each(|(c,v)|*v = c.norm());
+            .map(|c| c.norm())
+            .map(|c| DB::from(c).db())
+            .map(into_range)
+            .zip(end.iter_mut().chain(front.iter_mut())) // manually mirror
+            .for_each(|(c,v)|*v =  c as f32);
 
         // push the new line to the back
         self.all_rows.push(v);
