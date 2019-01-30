@@ -67,7 +67,6 @@ pub trait Fft {
     /// the internal temp buffer.
     fn tbwd(&mut self, input: &[cf32], s: Scale) -> &[cf32];
 
-
     /// Retrieve the (fixed) size (number of bins) this is generated for
     fn len(&self) -> usize;
 }
@@ -161,7 +160,7 @@ mod ch {
             &self.tmp[..]
         }
 
-        fn tbwd(&mut self, input: &[cf32], s: Scale)-> &[cf32] {
+        fn tbwd(&mut self, input: &[cf32], s: Scale) -> &[cf32] {
             assert_eq!(
                 self.len,
                 input.len(),
@@ -172,7 +171,6 @@ mod ch {
             s.scale(self.tmp.as_mut());
             &self.tmp[..]
         }
-
 
         fn len(&self) -> usize {
             self.len

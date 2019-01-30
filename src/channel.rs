@@ -20,13 +20,12 @@ pub mod noise {
     /// Convenience function which generates a vector of noise of given length and noise power
     pub fn make(len: usize, power: f32) -> std::vec::Vec<cf32> {
         let mut noise = Vec::with_capacity(len);
-        Awgn::new(power, DEFAULT_RNG_SEED).iter()
+        Awgn::new(power, DEFAULT_RNG_SEED)
+            .iter()
             .take(len)
             .for_each(|c| noise.push(c));
         noise
     }
-
-
 
     /// An AWGN Sampler
     #[derive(Debug)]
@@ -49,12 +48,11 @@ pub mod noise {
         }
 
         #[inline(always)]
-        fn next(&mut self) -> cf32{
+        fn next(&mut self) -> cf32 {
             cf32 {
                 re: self.rng.sample(self.dist) as f32 * self.scale,
                 im: self.rng.sample(self.dist) as f32 * self.scale,
             }
-
         }
 
         /// Change the noise power
@@ -66,7 +64,10 @@ pub mod noise {
         /// Overlay the given signal with noise from this generator
         pub fn apply(&mut self, signal: &mut [cf32]) {
             let p = self.power.sqrt();
-            signal.iter_mut().zip(self.iter()).for_each(|(s, n)| *s += n * p);
+            signal
+                .iter_mut()
+                .zip(self.iter())
+                .for_each(|(s, n)| *s += n * p);
         }
 
         /// Fill a vector up to capacity with noise from this generator
@@ -76,19 +77,17 @@ pub mod noise {
             }
         }
 
-        pub fn iter(&mut self) -> NoiseIter{
-            NoiseIter{
-                noisegen : self
-            }
+        pub fn iter(&mut self) -> NoiseIter {
+            NoiseIter { noisegen: self }
         }
     }
 
     #[derive(Debug)]
-    pub struct NoiseIter<'a>{
-        noisegen : &'a mut Awgn
+    pub struct NoiseIter<'a> {
+        noisegen: &'a mut Awgn,
     }
 
-    impl <'a>Iterator for NoiseIter<'a> {
+    impl<'a> Iterator for NoiseIter<'a> {
         type Item = cf32;
 
         fn next(&mut self) -> Option<Self::Item> {
