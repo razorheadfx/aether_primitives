@@ -3,7 +3,7 @@ extern crate criterion;
 
 use aether_primitives::vecops::VecOps;
 use aether_primitives::{cf32, sampling};
-use criterion::Criterion;
+use criterion::{black_box, Criterion};
 
 /////////////////--------------- core ops
 fn make_vecs() -> (Vec<cf32>, Vec<cf32>) {
@@ -108,16 +108,13 @@ criterion_group!(
 
 //////////////---------------ffts
 #[cfg(feature = "fft")]
-use aether_primitives::fft::{Fft, Scale};
-
-#[cfg(feature = "fft_chfft")]
-use aether_primitives::fft::Cfft;
+use aether_primitives::fft::{Cfft, Fft, Scale};
 
 fn inplace_ffts(_c: &mut Criterion) {
-    #[cfg(feature = "fft_chfft")]
+    #[cfg(feature = "fft")]
     {
         _c.bench_function_over_inputs(
-            "chfft inplace fwd",
+            "fft inplace fwd",
             |b: &mut criterion::Bencher, len: &usize| {
                 b.iter_with_setup(
                     || {
@@ -136,7 +133,7 @@ fn inplace_ffts(_c: &mut Criterion) {
         );
 
         _c.bench_function_over_inputs(
-            "chfft inplace bwd",
+            "fft inplace bwd",
             |b: &mut criterion::Bencher, len: &usize| {
                 b.iter_with_setup(
                     || {
@@ -157,10 +154,10 @@ fn inplace_ffts(_c: &mut Criterion) {
 }
 
 fn copy_ffts(_c: &mut Criterion) {
-    #[cfg(feature = "fft_chfft")]
+    #[cfg(feature = "fft")]
     {
         _c.bench_function_over_inputs(
-            "chfft copy fwd",
+            "fft copy fwd",
             |b: &mut criterion::Bencher, len: &usize| {
                 b.iter_with_setup(
                     || {
@@ -180,7 +177,7 @@ fn copy_ffts(_c: &mut Criterion) {
         );
 
         _c.bench_function_over_inputs(
-            "chfft copy bwd",
+            "fft copy bwd",
             |b: &mut criterion::Bencher, len: &usize| {
                 b.iter_with_setup(
                     || {
@@ -201,7 +198,44 @@ fn copy_ffts(_c: &mut Criterion) {
     }
 }
 
-criterion_group!(fft, inplace_ffts, copy_ffts);
+fn inplace_correlator(_c: &mut Criterion) {
+    #[cfg(feature = "fft")]
+    {
+        _c.bench_function_over_inputs(
+            "correlator inplace",
+            |b: &mut criterion::Bencher, len: &usize| {
+                b.iter_with_setup(
+                    || {
+                        let len = *len;
+                        let mut sig = vec![cf32::new(-1.0,1.0), cf32::new( 0.0, 0.0), cf32::new( 1.0,-1.0), cf32::new( 1.0,-1.0)];
+                        let input = (0..len).map(|i| sig[i % 4]).collect::<Vec<_>>();
+                        
+                        sig.vec_conj();
+                        while sig.len() < len{
+                            sig.push(cf32::default())
+                        }
+
+                        let fft = Cfft::with_len(len);
+                        (input, sig, fft)
+                    },
+                    |(mut input, sig, mut fft)| {
+                        let s = Scale::None;
+                        input.vec_rfft(&mut fft, s)
+                            .vec_mul(&sig)
+                            .vec_rifft(&mut fft, s);
+                        black_box(input)
+                    },
+                );
+            },
+            vec![512usize, 1024usize, 2048usize],
+        );
+    }
+
+}
+
+
+
+criterion_group!(fft, inplace_ffts, copy_ffts, inplace_correlator);
 
 ////////////////----------------------------
 criterion_main!(vecops, sampling, fft);
