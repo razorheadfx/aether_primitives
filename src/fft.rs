@@ -37,8 +37,12 @@ impl Scale {
 }
 
 /// Wrapper to be implemented for different fft implementations
-/// For example for use in VecOps
-/// FFT and input must be the same length
+/// For use in VecOps or using the Cfft standalone struct.
+/// FFT and input must be the same length.
+/// Currently there are two fft implementations which are supported:
+/// [chfft](https://github.com/chalharu/chfft) (activated by activating
+/// the ```fft_chfft``` feature) and [RustFFT](https://github.com/awelkie/RustFFT)
+/// (activated via ```fft_rustfft```).
 #[allow(clippy::len_without_is_empty)]
 pub trait Fft {
     /// FFT (Forward) from ```input``` to ```output```  
@@ -71,8 +75,11 @@ pub trait Fft {
     fn len(&self) -> usize;
 }
 
-#[cfg(feature = "fft_chfft")]
 /// Complex fft using Chalharu's Fastest Fourier Transform
+/// This uses an interator-based implementation with fewer dependencies.
+/// Benchmarks show it is faster for smaller ffts (< 512 bins). Longer
+/// ffts however, are significantly slower than RustFFT (~10 times for a 2048bin fft).
+#[cfg(feature = "fft_chfft")]
 pub use self::ch::Cfft;
 
 #[cfg(feature = "fft_chfft")]
@@ -180,10 +187,13 @@ mod ch {
 }
 
 /// Complex fft using Allen Welkie's Rustfft
+/// This implementation will always perform an additional copy step in the
+/// service of preseverving input. In addition its internal buffer is twice the size
+/// of chffts. However, benchmarks show show that RustFFT performs significantly
+/// better for longer ffts (>512 bins).
 #[cfg(feature = "fft_rustfft")]
 pub use self::ru::Cfft;
 
-/// TODO: integrate rustfft
 #[cfg(feature = "fft_rustfft")]
 mod ru {
     extern crate rustfft;
@@ -199,6 +209,7 @@ mod ru {
         fwd: Arc<FFT<f32>>,
         // unfortunately we need to use a smart pointer here
         bwd: Arc<FFT<f32>>,
+        /// this vector is twice the length so we can support the tbwd transform
         tmp: Vec<cf32>,
         len: usize,
     }
@@ -212,8 +223,7 @@ mod ru {
             Cfft {
                 fwd,
                 bwd,
-                // TODO: use vec_align
-                tmp: vec![cf32::default(); len],
+                tmp: vec![cf32::default(); 2*len],
                 len,
             }
         }
@@ -226,8 +236,8 @@ mod ru {
                 input.len(),
                 "Input and FFT must be the same length"
             );
-            self.tmp.vec_clone(&input);
-            self.fwd.process(&mut self.tmp[..], output);
+            self.tmp[..self.len].vec_clone(&input);
+            self.fwd.process(&mut self.tmp[..self.len], output);
             s.scale(output);
         }
 
@@ -237,8 +247,8 @@ mod ru {
                 input.len(),
                 "Input and FFT must be the same length"
             );
-            self.tmp.vec_clone(&input);
-            self.bwd.process(&mut self.tmp[..], output);
+            self.tmp[..self.len].vec_clone(&input);
+            self.bwd.process(&mut self.tmp[..self.len], output);
             s.scale(output);
         }
 
@@ -248,9 +258,9 @@ mod ru {
                 input.len(),
                 "Input and FFT must be the same length"
             );
-            warn!("RustFFT does not support in-place transforms. This will involve an additional copy step.");
-            self.tmp.vec_clone(&input);
-            self.fwd.process(&mut self.tmp[..], input);
+            // warn!("RustFFT does not support in-place transforms. This will involve an additional copy step.");
+            self.tmp[..self.len].vec_clone(&input);
+            self.fwd.process(&mut self.tmp[..self.len], input);
             s.scale(input);
         }
 
@@ -260,11 +270,41 @@ mod ru {
                 input.len(),
                 "Input and FFT must be the same length"
             );
-            warn!("RustFFT does not support in-place transforms. This will involve an additional copy step.");
-            self.tmp.vec_clone(&input);
-            self.fwd.process(&mut self.tmp[..], input);
+            // warn!("RustFFT does not support in-place transforms. This will involve an additional copy step.");
+            self.tmp[..self.len].vec_clone(&input);
+            self.bwd.process(&mut self.tmp[..self.len], input);
             s.scale(input);
         }
+
+        fn tfwd(&mut self, input: &[cf32], s: Scale) -> &[cf32]{
+            assert_eq!(
+                self.len,
+                input.len(),
+                "Input and FFT must be the same length"
+            );
+            // warn!("RustFFT does not support in-place transforms. This will involve an additional copy step.");
+            self.tmp[..self.len].vec_clone(&input);
+            let (input, output) = self.tmp.split_at_mut(self.len);
+            self.fwd.process(input, output);
+            s.scale(output);
+            output   
+        }
+
+        fn tbwd(&mut self, input: &[cf32], s: Scale) -> &[cf32]{
+            assert_eq!(
+                self.len,
+                input.len(),
+                "Input and FFT must be the same length"
+            );
+            // warn!("RustFFT does not support in-place transforms. This will involve an additional copy step.");
+            self.tmp[..self.len].vec_clone(&input);
+            let (input, output) = self.tmp.split_at_mut(self.len);
+            self.bwd.process(input, output);
+            s.scale(output);
+            output      
+        }
+
+
 
         fn len(&self) -> usize {
             self.len
