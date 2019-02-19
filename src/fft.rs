@@ -88,18 +88,37 @@ pub trait Fft {
 /// use aether_primitives::fft::{Fft,Cfft, Scale};
 /// use aether_primitives::vecops::VecOps;
 /// 
-/// // no scaling of the result (other scalers are N=> 1/n, SN => 1/sqrt(N), X(your number) with N the number of bins)
+/// // no scaling of the result
+/// // (other scalers are N=> 1/N, SN => 1/sqrt(N), X(your number) where N is the number of bins)
 /// let scale = Scale::None;
 /// let mut data = vec![cf32::new(1.0,0.0);128];
 /// // the vecops version
-/// // forward transform convenience function (creates and destroys a Cfft instance on the fly)
+/// // forward transform convenience function
+/// // creates and destroys a Cfft instance on the fly (same length as the vec or slice)
 /// // useful for rapid prototyping
 /// data.vec_fft(scale);
+/// // we could also data.vec_ifft for the backward transform
+///
+/// // not scaling will cause the DC bin to contain all the energy
 /// let mut right = vec![cf32::default();128];
 /// right[0] = cf32::new(128.0,0.0);
-/// assert_evm!(&data, &right, -10.0);
+/// assert_evm!(&data, &right);
 /// 
 ///
+/// // Lets transform it back with reuseable a standalone fft instance
+/// // this time we'll scale this with 1/n
+/// let scale = Scale::N;
+/// let mut f = Cfft::with_len(128);
+/// // inplace backward (ifft) transform
+/// f.ibwd(&mut data, scale);
+/// assert_evm!(&data, vec![cf32::new(1.0,0.0); 128]);
+/// 
+/// // We could also reuse an already allocated Cfft using vecops
+/// // for example if we want to transform forward and backward in quick succession
+/// data.vec_rfft(&mut f, Scale::SN).vec_scale(2.0).vec_rifft(&mut f, Scale::SN);
+/// assert_evm!(&data, vec![cf32::new(2.0,0.0); 128], -72); 
+/// #// we're in floating point imprecision territory here -80 yields error of -69db
+/// #// but using -72 works; the joy of floating point representation xD
 /// ```
 #[cfg(feature = "fft_rustfft")]
 pub use self::ru::Cfft;
