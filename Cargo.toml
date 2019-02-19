@@ -11,18 +11,20 @@ readme      = "README.md"
 edition     = "2018"
 
 [dependencies]
-# these are unspecified so whoever wants to use it can specify their 
-# own version number as cargo will prefer to use that version
-num-traits                  = ">=0.0.0"
-# pull in serialisation for Complex<T>
-num-complex                 = { version = ">=0.0.0", features = ["serde"] }
-csv                         = "1.0.2"
-# f32/f64 equality assertion
-assert_approx_eq            = "1.1.0"
-rand                        = "0.6.1"
+# these are set to the version used by rustfft so we don't'get any incompatabilities
+num-traits                  = "0.2"
+num-complex                 = { version = "0.2", features = ["serde"] }
 
-# optional stuff
-chfft                       = { optional = true, version = "0.2.4" }
+# serialization for csv (requires serde feature of num-complex)
+csv                         = "1.0"
+# f32/f64 equality assertion
+assert_approx_eq            = "1.1"
+rand                        = "0.6"
+
+# the default fft
+rustfft                     = { optional = true, version = "3.0" }
+
+# gnuplot support
 gnuplot                     = { optional = true, version = "0.0.26" }
 
 
@@ -32,6 +34,7 @@ piston2d-graphics           = { optional = true, version = "0.29.0" }
 pistoncore-glutin_window    = { optional = true, version = "0.52.0" }
 piston2d-opengl_graphics    = { optional = true, version = "0.58.0" }
 
+
 [dev-dependencies]
 criterion        = "0.2"
 
@@ -40,8 +43,8 @@ name             = "benches"
 harness          = false
 
 [features]
-default          = []
-fft_chfft        = ["chfft", "fft"]
+default          = ["fft_rustfft"]
+fft_rustfft      = ["rustfft", "fft"]
 plot             = ["gnuplot"]
 gui              = ["piston", "piston2d-graphics", "pistoncore-glutin_window", "piston2d-opengl_graphics"]
 

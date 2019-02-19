@@ -4,7 +4,7 @@ use crate::vecops::VecOps;
 /// Scaling Policy for Transforms
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Scale {
-    /// Scale with 1 (no scaling)
+    /// No scaling
     None,
     /// Multiplies with 1/sqrt(N)
     /// with ```N```: transform length
@@ -13,11 +13,13 @@ pub enum Scale {
     /// Multiplies with 1/N
     /// with ```N```: transform length
     N,
-    /// Multiplies with given scaling factor X
+    /// Multiplies with a user-provided scaling factor X
     X(f32),
 }
 
 impl Scale {
+
+    /// scale all elements of the given slice using this scaler
     pub fn scale(self, data: &mut [cf32]) {
         match self {
             Scale::None => (),
@@ -75,122 +77,30 @@ pub trait Fft {
     fn len(&self) -> usize;
 }
 
-/// Complex fft using Chalharu's Fastest Fourier Transform
-/// This uses an interator-based implementation with fewer dependencies.
-/// Benchmarks show it is faster for smaller ffts (< 512 bins). Longer
-/// ffts however, are significantly slower than RustFFT (~10 times for a 2048bin fft).
-#[cfg(feature = "fft_chfft")]
-pub use self::ch::Cfft;
-
-#[cfg(feature = "fft_chfft")]
-mod ch {
-    extern crate chfft;
-    use super::{Fft, Scale};
-
-    use crate::cf32;
-    use crate::vecops::VecOps;
-    use chfft::CFft1D;
-
-    pub struct Cfft {
-        fft: CFft1D<f32>,
-        tmp: Vec<cf32>,
-        len: usize,
-    }
-
-    impl Cfft {
-        pub fn with_len(len: usize) -> Cfft {
-            Cfft {
-                fft: CFft1D::<f32>::with_len(len),
-                // TODO: use vec_align
-                tmp: vec![cf32::default(); len],
-                len,
-            }
-        }
-    }
-
-    impl Fft for Cfft {
-        fn fwd(&mut self, input: &[cf32], output: &mut [cf32], s: Scale) {
-            assert_eq!(
-                self.len,
-                input.len(),
-                "Input and FFT must be the same length"
-            );
-            self.tmp.vec_clone(&input);
-            self.fft.forward0i(&mut self.tmp);
-            // OPT: optimize by scaling as its copied over so we do not have to read this stuff twice
-            output.vec_clone(&self.tmp);
-            s.scale(output);
-        }
-
-        fn bwd(&mut self, input: &[cf32], output: &mut [cf32], s: Scale) {
-            assert_eq!(
-                self.len,
-                input.len(),
-                "Input and FFT must be the same length"
-            );
-            self.tmp.vec_clone(&input);
-            self.fft.backward0i(&mut self.tmp);
-            output.vec_clone(&self.tmp);
-            // OPT: optimize by scaling as its copied over so we do not have to read this stuff twice
-            s.scale(output);
-        }
-
-        fn ifwd(&mut self, input: &mut [cf32], s: Scale) {
-            assert_eq!(
-                self.len,
-                input.len(),
-                "Input and FFT must be the same length"
-            );
-            self.fft.forward0i(input);
-            s.scale(input);
-        }
-
-        fn ibwd(&mut self, input: &mut [cf32], s: Scale) {
-            assert_eq!(
-                self.len,
-                input.len(),
-                "Input and FFT must be the same length"
-            );
-            self.fft.backward0i(input);
-            s.scale(input);
-        }
-
-        fn tfwd(&mut self, input: &[cf32], s: Scale) -> &[cf32] {
-            assert_eq!(
-                self.len,
-                input.len(),
-                "Input and FFT must be the same length"
-            );
-            self.tmp.vec_clone(&input);
-            self.fft.forward0i(&mut self.tmp);
-            s.scale(self.tmp.as_mut());
-            &self.tmp[..]
-        }
-
-        fn tbwd(&mut self, input: &[cf32], s: Scale) -> &[cf32] {
-            assert_eq!(
-                self.len,
-                input.len(),
-                "Input and FFT must be the same length"
-            );
-            self.tmp.vec_clone(&input);
-            self.fft.backward0i(&mut self.tmp);
-            s.scale(self.tmp.as_mut());
-            &self.tmp[..]
-        }
-
-        fn len(&self) -> usize {
-            self.len
-        }
-    }
-
-}
-
-/// Complex fft using Allen Welkie's Rustfft
+/// Complex fft using [Allen Welkie's Rustfft](https://github.com/awelkie/RustFFT)
 /// This implementation will always perform an additional copy step in the
-/// service of preseverving input. In addition its internal buffer is twice the size
-/// of chffts. However, benchmarks show show that RustFFT performs significantly
-/// better for longer ffts (>512 bins).
+/// service of preseverving input. In addition its internal buffer is twice
+/// in order to support tfwd/tbwd.
+/// Rustffts planner is used to select the appropriate algorithm for the given fft size
+/// # Example
+/// ```
+/// use aether_primitives::{cf32, assert_evm};
+/// use aether_primitives::fft::{Fft,Cfft, Scale};
+/// use aether_primitives::vecops::VecOps;
+/// 
+/// // no scaling of the result (other scalers are N=> 1/n, SN => 1/sqrt(N), X(your number) with N the number of bins)
+/// let scale = Scale::None;
+/// let mut data = vec![cf32::new(1.0,0.0);128];
+/// // the vecops version
+/// // forward transform convenience function (creates and destroys a Cfft instance on the fly)
+/// // useful for rapid prototyping
+/// data.vec_fft(scale);
+/// let mut right = vec![cf32::default();128];
+/// right[0] = cf32::new(128.0,0.0);
+/// assert_evm!(&data, &right, -10.0);
+/// 
+///
+/// ```
 #[cfg(feature = "fft_rustfft")]
 pub use self::ru::Cfft;
 
@@ -209,12 +119,15 @@ mod ru {
         fwd: Arc<FFT<f32>>,
         // unfortunately we need to use a smart pointer here
         bwd: Arc<FFT<f32>>,
-        /// this vector is twice the length so we can support the tbwd transform
+        /// this this is used as an internal buffer in order to preserve input
+        /// vector is twice the length so we can support temp transform variants tfwd/tbwd.
         tmp: Vec<cf32>,
         len: usize,
     }
 
     impl Cfft {
+        
+        /// Setup a RustFFT for forward and backward operation with the given length
         pub fn with_len(len: usize) -> Cfft {
             let fwd = FFTplanner::new(true).plan_fft(len);
 
@@ -258,7 +171,6 @@ mod ru {
                 input.len(),
                 "Input and FFT must be the same length"
             );
-            // warn!("RustFFT does not support in-place transforms. This will involve an additional copy step.");
             self.tmp[..self.len].vec_clone(&input);
             self.fwd.process(&mut self.tmp[..self.len], input);
             s.scale(input);
@@ -270,7 +182,6 @@ mod ru {
                 input.len(),
                 "Input and FFT must be the same length"
             );
-            // warn!("RustFFT does not support in-place transforms. This will involve an additional copy step.");
             self.tmp[..self.len].vec_clone(&input);
             self.bwd.process(&mut self.tmp[..self.len], input);
             s.scale(input);
@@ -282,7 +193,6 @@ mod ru {
                 input.len(),
                 "Input and FFT must be the same length"
             );
-            // warn!("RustFFT does not support in-place transforms. This will involve an additional copy step.");
             self.tmp[..self.len].vec_clone(&input);
             let (input, output) = self.tmp.split_at_mut(self.len);
             self.fwd.process(input, output);
@@ -296,7 +206,6 @@ mod ru {
                 input.len(),
                 "Input and FFT must be the same length"
             );
-            // warn!("RustFFT does not support in-place transforms. This will involve an additional copy step.");
             self.tmp[..self.len].vec_clone(&input);
             let (input, output) = self.tmp.split_at_mut(self.len);
             self.bwd.process(input, output);
@@ -325,24 +234,24 @@ mod test {
         let no = Scale::None;
         let mut nos = input.clone();
         no.scale(&mut nos);
-        assert_evm!(nos, &input, 80.0);
+        assert_evm!(nos, &input, -80.0);
 
         let sn = Scale::SN;
         let snc = vec![cf32::new(2.0, 0.0); 4];
         let mut sns = input.clone();
         sn.scale(&mut sns);
-        assert_evm!(sns, snc, 80.0);
+        assert_evm!(sns, snc, -80.0);
 
         let n = Scale::N;
         let nc = vec![cf32::new(1.0, 0.0); 4];
         let mut ns = input.clone();
         n.scale(&mut ns);
-        assert_evm!(ns, nc, 80.0);
+        assert_evm!(ns, nc, -80.0);
 
         let x = Scale::X(2.0);
         let xc = vec![cf32::new(8.0, 0.0); 4];
         let mut xs = input.clone();
         x.scale(&mut xs);
-        assert_evm!(xs, xc, 80.0);
+        assert_evm!(xs, xc, -80.0);
     }
 }
