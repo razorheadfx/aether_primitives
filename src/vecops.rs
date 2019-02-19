@@ -360,7 +360,7 @@ mod test {
     fn vec_div() {
         let mut twos = vec![cf32::new(2.0, 2.0); 100];
         let two_re = vec![cf32::new(2.0, 0.0); 100];
-        let ones = vec![cf32::new(1.0, 0.0); 100];
+        let ones = vec![cf32::new(1.0, 1.0); 100];
         twos.vec_div(&two_re);
 
         assert_evm!(&twos, ones);
@@ -402,15 +402,6 @@ mod test {
         even.vec_mirror();
 
         assert_evm!(&even, &even_mirrored);
-
-        // This case is excluded as per documentation, but we check for it anyway
-        let mut odd = (0..5).map(|i| cf32::new(i as f32, 0.0)).collect::<Vec<_>>();
-        let odd_mirrored = [3, 4, 0, 1, 2]
-            .iter()
-            .map(|i| cf32::new(*i as f32, 0.0))
-            .collect::<Vec<_>>();
-        odd.vec_mirror();
-        assert_evm!(&odd, &odd_mirrored);
     }
 
     #[test]
@@ -455,8 +446,8 @@ mod test {
         use crate::fft::Scale;
         let v = vec![cf32::new(1.0, 1.0); 100];
         let mut c = v.clone();
-        c.vec_fft(Scale::None).vec_ifft(Scale::None);
-        assert_evm!(c, v, -80.0);
+        c.vec_fft(Scale::SN).vec_ifft(Scale::SN);
+        assert_evm!(c, v);
     }
 
     #[test]
@@ -466,9 +457,9 @@ mod test {
         let v = vec![cf32::new(1.0, 1.0); 100];
         let mut c = v.clone();
         let mut fft = Cfft::with_len(100);
-        c.vec_rfft(&mut fft, Scale::None)
-            .vec_rifft(&mut fft, Scale::None);
-        assert_evm!(c, v, -80.0);
+        c.vec_rfft(&mut fft, Scale::SN)
+            .vec_rifft(&mut fft, Scale::SN);
+        assert_evm!(c, v);
     }
 
 }
