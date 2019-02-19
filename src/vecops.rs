@@ -20,7 +20,7 @@ use crate::fft::{Cfft, Fft, Scale};
 /// let twos = v.clone();
 /// let ones = vec![cf32::new(1.0, 1.0); 100];
 ///
-/// let correct = vec![cf32::new(1.0, -1.0); 100];
+/// let correct = vec![cf32::new(1.0, 1.0); 100];
 ///
 /// v.vec_div(&twos)
 ///     .vec_mul(&twos)
