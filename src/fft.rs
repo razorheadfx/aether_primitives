@@ -117,8 +117,8 @@ pub trait Fft {
 /// // for example if we want to transform forward and backward in quick succession
 /// data.vec_rfft(&mut f, Scale::SN).vec_scale(2.0).vec_rifft(&mut f, Scale::SN);
 /// assert_evm!(&data, vec![cf32::new(2.0,0.0); 128], -72); 
-/// #// we're in floating point imprecision territory here -80 yields error of -69db
-/// #// but using -72 works; the joy of floating point representation xD
+/// # // we're in floating point imprecision territory here -80 yields error of -69db
+/// # // but using -72 works; the joy of floating point representation xD
 /// ```
 #[cfg(feature = "fft_rustfft")]
 pub use self::ru::Cfft;
