@@ -125,16 +125,15 @@ pub fn csv_reader(filepath: &PathBuf) -> csv::Result<csv::Reader<File>> {
 
 #[cfg(test)]
 mod test {
-    use crate::{cf32, file};
-    use std::fs;
-    use std::mem;
-    use std::path::PathBuf;
 
     // this test requires the tmpfs because we do not want files to persist
     // across reboots (or (failed) runs for that matter) /tmp is perfect for that
     #[cfg(target_os = "linux")]
     #[test]
     fn test_binary_writer_and_reader() {
+        use crate::{cf32, file};
+        use std::fs;
+        use std::mem;
         let tmpfile: PathBuf = PathBuf::from("/tmp/aether_primitives_binary_test.bin");
         //remove the tmpfile if it exists
         fs::remove_file(&tmpfile).unwrap_or(());
@@ -173,6 +172,8 @@ mod test {
     #[cfg(target_os = "linux")]
     #[test]
     fn test_csv_writer_and_reader() {
+        use crate::{cf32, file};
+        use std::fs;
         let tmpfile: PathBuf = PathBuf::from("/tmp/aether_primitives_csv_test.csv");
         //remove the tmpfile if it exists
         fs::remove_file(&tmpfile).unwrap_or(());
