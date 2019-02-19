@@ -1,10 +1,9 @@
 use crate::cf32;
 
-#[cfg(feature = "fft_chfft")]
+#[cfg(feature = "fft")]
 use crate::fft::{Cfft, Fft, Scale};
 use crate::util::DB;
 
-extern crate chfft;
 extern crate glutin_window;
 extern crate graphics;
 extern crate opengl_graphics;
@@ -53,7 +52,7 @@ pub trait Liveplot<I> {
 /// // jh.join().expect("Failed to rejoin thread")
 ///
 ///```
-#[cfg(feature = "fft_chfft")]
+#[cfg(feature = "fft")]
 pub fn waterfall(ncol: usize, minmax: Option<(f64, f64)>) -> Waterfall {
     const NROWS: usize = 200;
     // minimum value in db
@@ -108,7 +107,7 @@ pub fn launch<I: Sync + Send + 'static, L: Liveplot<I> + Send + 'static>(
     })
 }
 
-#[cfg(feature = "fft_chfft")]
+#[cfg(feature = "fft")]
 pub struct Waterfall {
     nrows: usize,
     ncols: usize,
