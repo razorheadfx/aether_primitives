@@ -59,11 +59,14 @@ pub mod sampling;
 /// Pseudo-Random Sequence Generation
 pub mod sequence;
 
+/// Conversion of bits into to Q/I symbols and back
+pub mod modulation;
+
 /// Operations on files of samples
 pub mod file;
 
-/// Helpers for dealing with channels and noise
-pub mod channel;
+/// Helpers for generating AWGN noise
+pub mod noise;
 
 /// Helpers to instantiate thread-based processing pipelines
 /// built atop of std::syn::mpsc channels
