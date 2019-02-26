@@ -18,7 +18,6 @@ pub enum Scale {
 }
 
 impl Scale {
-
     /// scale all elements of the given slice using this scaler
     pub fn scale(self, data: &mut [cf32]) {
         match self {
@@ -87,7 +86,7 @@ pub trait Fft {
 /// use aether_primitives::{cf32, assert_evm};
 /// use aether_primitives::fft::{Fft,Cfft, Scale};
 /// use aether_primitives::vecops::VecOps;
-/// 
+///
 /// // no scaling of the result (other scalers are N=> 1/n, SN => 1/sqrt(N), X(your number) with N the number of bins)
 /// let scale = Scale::None;
 /// let mut data = vec![cf32::new(1.0,0.0);128];
@@ -98,7 +97,7 @@ pub trait Fft {
 /// let mut right = vec![cf32::default();128];
 /// right[0] = cf32::new(128.0,0.0);
 /// assert_evm!(&data, &right, -10.0);
-/// 
+///
 ///
 /// ```
 #[cfg(feature = "fft_rustfft")]
@@ -126,7 +125,6 @@ mod ru {
     }
 
     impl Cfft {
-        
         /// Setup a RustFFT for forward and backward operation with the given length
         pub fn with_len(len: usize) -> Cfft {
             let fwd = FFTplanner::new(true).plan_fft(len);
@@ -136,7 +134,7 @@ mod ru {
             Cfft {
                 fwd,
                 bwd,
-                tmp: vec![cf32::default(); 2*len],
+                tmp: vec![cf32::default(); 2 * len],
                 len,
             }
         }
@@ -187,7 +185,7 @@ mod ru {
             s.scale(input);
         }
 
-        fn tfwd(&mut self, input: &[cf32], s: Scale) -> &[cf32]{
+        fn tfwd(&mut self, input: &[cf32], s: Scale) -> &[cf32] {
             assert_eq!(
                 self.len,
                 input.len(),
@@ -197,10 +195,10 @@ mod ru {
             let (input, output) = self.tmp.split_at_mut(self.len);
             self.fwd.process(input, output);
             s.scale(output);
-            output   
+            output
         }
 
-        fn tbwd(&mut self, input: &[cf32], s: Scale) -> &[cf32]{
+        fn tbwd(&mut self, input: &[cf32], s: Scale) -> &[cf32] {
             assert_eq!(
                 self.len,
                 input.len(),
@@ -210,10 +208,8 @@ mod ru {
             let (input, output) = self.tmp.split_at_mut(self.len);
             self.bwd.process(input, output);
             s.scale(output);
-            output      
+            output
         }
-
-
 
         fn len(&self) -> usize {
             self.len

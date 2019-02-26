@@ -207,11 +207,16 @@ fn inplace_correlator(_c: &mut Criterion) {
                 b.iter_with_setup(
                     || {
                         let len = *len;
-                        let mut sig = vec![cf32::new(-1.0,1.0), cf32::new( 0.0, 0.0), cf32::new( 1.0,-1.0), cf32::new( 1.0,-1.0)];
+                        let mut sig = vec![
+                            cf32::new(-1.0, 1.0),
+                            cf32::new(0.0, 0.0),
+                            cf32::new(1.0, -1.0),
+                            cf32::new(1.0, -1.0),
+                        ];
                         let input = (0..len).map(|i| sig[i % 4]).collect::<Vec<_>>();
-                        
+
                         sig.vec_conj();
-                        while sig.len() < len{
+                        while sig.len() < len {
                             sig.push(cf32::default())
                         }
 
@@ -220,7 +225,8 @@ fn inplace_correlator(_c: &mut Criterion) {
                     },
                     |(mut input, sig, mut fft)| {
                         let s = Scale::None;
-                        input.vec_rfft(&mut fft, s)
+                        input
+                            .vec_rfft(&mut fft, s)
                             .vec_mul(&sig)
                             .vec_rifft(&mut fft, s);
                         black_box(input)
@@ -230,10 +236,7 @@ fn inplace_correlator(_c: &mut Criterion) {
             vec![512usize, 1024usize, 2048usize],
         );
     }
-
 }
-
-
 
 criterion_group!(fft, inplace_ffts, copy_ffts, inplace_correlator);
 

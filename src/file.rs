@@ -134,7 +134,8 @@ mod test {
         use crate::{cf32, file};
         use std::fs;
         use std::mem;
-        let tmpfile: PathBuf = PathBuf::from("/tmp/aether_primitives_binary_test.bin");
+        use std::path::PathBuf;
+        let tmpfile = PathBuf::from("/tmp/aether_primitives_binary_test.bin");
         //remove the tmpfile if it exists
         fs::remove_file(&tmpfile).unwrap_or(());
 
@@ -174,7 +175,9 @@ mod test {
     fn test_csv_writer_and_reader() {
         use crate::{cf32, file};
         use std::fs;
-        let tmpfile: PathBuf = PathBuf::from("/tmp/aether_primitives_csv_test.csv");
+        use std::path::PathBuf;
+
+        let tmpfile = PathBuf::from("/tmp/aether_primitives_csv_test.csv");
         //remove the tmpfile if it exists
         fs::remove_file(&tmpfile).unwrap_or(());
 

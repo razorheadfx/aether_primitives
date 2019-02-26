@@ -8,7 +8,6 @@ extern crate num_complex;
 #[allow(non_camel_case_types)]
 pub type cf32 = num_complex::Complex32;
 
-
 /// Error Vector Magnitude assertion
 /// Checks each element and panics if an element in the ```actual```
 /// EVM = 10 log (P_error/P_ref) => Error vector in relation to the actually expected signal in dB.
@@ -86,44 +85,24 @@ mod test {
 
     #[test]
     fn evm_ok() {
-        let refr = vec![
-            cf32::new(1f32, 0f32),
-            cf32::new(1f32, 0f32),
-        ];
+        let refr = vec![cf32::new(1f32, 0f32), cf32::new(1f32, 0f32)];
 
-        let act = vec![
-            cf32::new(1f32, 0f32),
-            cf32::new(1f32, 0f32),
-        ];
+        let act = vec![cf32::new(1f32, 0f32), cf32::new(1f32, 0f32)];
         assert_evm!(act, &refr, -80.0);
 
-        let act = vec![
-            cf32::new(1f32, 0f32),
-            cf32::new(0.99f32, 0f32),
-        ];
+        let act = vec![cf32::new(1f32, 0f32), cf32::new(0.99f32, 0f32)];
         assert_evm!(act, &refr, -20);
 
-        let act = vec![
-            cf32::new(1f32, 0f32),
-            cf32::new(1.01f32, 0f32),
-        ];
+        let act = vec![cf32::new(1f32, 0f32), cf32::new(1.01f32, 0f32)];
         assert_evm!(act, &refr, -20);
-
-
     }
 
     #[test]
     #[should_panic]
     fn evm_ieee754() {
-        let refr = vec![
-            cf32::new(1f32, 0f32),
-            cf32::new(1f32, 0f32),
-        ];
+        let refr = vec![cf32::new(1f32, 0f32), cf32::new(1f32, 0f32)];
 
-        let act = vec![
-            cf32::new(1f32, 0f32),
-            cf32::new(0.9f32, 0f32),
-        ];
+        let act = vec![cf32::new(1f32, 0f32), cf32::new(0.9f32, 0f32)];
 
         assert_evm!(act, refr, -10);
     }
@@ -131,15 +110,9 @@ mod test {
     #[test]
     #[should_panic]
     fn evm_exceeded() {
-        let refr = vec![
-            cf32::new(1f32, 0f32),
-            cf32::new(1f32, 0f32),
-        ];
+        let refr = vec![cf32::new(1f32, 0f32), cf32::new(1f32, 0f32)];
 
-        let act = vec![
-            cf32::new(1f32, 0f32),
-            cf32::new(0.98f32, 0f32),
-        ];
+        let act = vec![cf32::new(1f32, 0f32), cf32::new(0.98f32, 0f32)];
         // error should be <= 0.0
         assert_evm!(act, refr, -20);
     }
