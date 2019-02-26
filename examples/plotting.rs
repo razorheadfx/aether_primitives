@@ -14,19 +14,19 @@ fn main() {
 
         {
             println!("Generating noise and plotting constellation");
-            let noise : Vec<_> = noise.iter().take(2048).collect();
+            let noise: Vec<_> = noise.iter().take(2048).collect();
             let no_file_out = None;
             plot::constellation(&noise, "2048 Noise Values", no_file_out);
         }
         {
             println!("Generating noise and plotting time signal");
-            let noise : Vec<_> = noise.iter().take(200).collect();
+            let noise: Vec<_> = noise.iter().take(200).collect();
             let no_file_out = None;
             plot::time(&noise, "200 Noise Values", no_file_out);
         }
         {
             println!("Generating noise and plotting comparison");
-            let noise : Vec<_> = noise.iter().take(400).collect();
+            let noise: Vec<_> = noise.iter().take(400).collect();
             let no_file_out = None;
             plot::compare(
                 &noise[..200],
@@ -40,7 +40,7 @@ fn main() {
         {
             println!("Generating noise and waterfall");
             let fft_len = 2048;
-            let noise : Vec<_> = noise.iter().take(fft_len * 500).collect();
+            let noise: Vec<_> = noise.iter().take(fft_len * 500).collect();
             let use_db = true;
             let no_file_out = None;
             plot::waterfall(
