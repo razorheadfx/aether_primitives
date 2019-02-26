@@ -63,11 +63,11 @@ pub mod noise {
 
         /// Overlay the given signal with noise from this generator
         pub fn apply(&mut self, signal: &mut [cf32]) {
-            let p = self.power.sqrt();
+            let sc = self.scale;
             signal
                 .iter_mut()
                 .zip(self.iter())
-                .for_each(|(s, n)| *s += n * p);
+                .for_each(|(s, n)| *s += n.scale(sc));
         }
 
         /// Fill a vector up to capacity with noise from this generator
