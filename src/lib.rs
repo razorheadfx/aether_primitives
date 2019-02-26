@@ -65,6 +65,10 @@ pub mod file;
 /// Helpers for dealing with channels and noise
 pub mod channel;
 
+/// Helpers to instantiate thread-based processing pipelines
+/// built atop of std::syn::mpsc channels
+pub mod pipeline;
+
 /// A minimal, OpenGl accelerated UI based on [piston](https://github.com/pistondevelopers/piston)  
 /// Supports waterfall, time domain and eye diagrams
 #[cfg(feature = "gui")]

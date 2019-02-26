@@ -1,13 +1,11 @@
 fn main() {
-    #[cfg(not(feature = "gui"))]
-    #[cfg(not(feature = "fft"))]
+    #[cfg(any(not(feature = "fft"), not(feature = "gui")))]
     {
         println!("This example requires the \"gui\" and \"fft\" features.");
-        println!("Try it with: cargo run --example plotting --features=\"gui fft_chfft\"");
+        println!("Try again with: cargo run --example plotting --features=\"gui fft_rustfft\"");
     }
 
-    #[cfg(feature = "gui")]
-    #[cfg(feature = "fft")]
+    #[cfg(all(feature = "gui", feature = "fft"))]
     {
         use aether_primitives::cf32;
         use aether_primitives::channel::noise;
