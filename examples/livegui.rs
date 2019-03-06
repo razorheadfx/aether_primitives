@@ -8,7 +8,7 @@ fn main() {
     #[cfg(all(feature = "gui", feature = "fft"))]
     {
         use aether_primitives::cf32;
-        use aether_primitives::channel::noise;
+        use aether_primitives::noise;
         use aether_primitives::gui;
         use aether_primitives::util::DB;
         use std::f32::consts::PI;
