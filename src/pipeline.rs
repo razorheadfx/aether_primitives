@@ -8,7 +8,6 @@ use std::time::{Duration, SystemTime};
 /// Stages die when either Receiver or Sender dies.
 /// Stages operate in blocking fashion, thus generate no CPU load if they do not run.
 /// Stages will try to report load and number of processed objects every second.
-/// It is very important to
 pub struct Pipeline<I, O>
 where
     I: Send,
