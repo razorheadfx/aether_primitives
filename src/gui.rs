@@ -31,7 +31,7 @@ pub trait Liveplot<I> {
 ///```
 /// use aether_primitives::cf32;
 /// use aether_primitives::gui;
-/// use aether_primitives::channel::noise;
+/// use aether_primitives::noise;
 /// use std::sync::mpsc;
 /// let bins = 512;
 /// let (s, r) = mpsc::channel::<Vec<cf32>>();
