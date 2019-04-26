@@ -25,14 +25,14 @@ rand                        = "0.6"
 rustfft                     = { optional = true, version = "3.0" }
 
 # gnuplot support
-gnuplot                     = { optional = true, version = "0.0.26" }
+gnuplot                     = { optional = true, version = "0.0" }
 
 
 # gui stuff
-piston                      = { optional = true, version = "0.40.0" }
-piston2d-graphics           = { optional = true, version = "0.29.0" }
-pistoncore-glutin_window    = { optional = true, version = "0.52.0" }
-piston2d-opengl_graphics    = { optional = true, version = "0.58.0" }
+piston                      = { optional = true, version = "0.40" }
+piston2d-graphics           = { optional = true, version = "0.29" }
+pistoncore-glutin_window    = { optional = true, version = "0.52" }
+piston2d-opengl_graphics    = { optional = true, version = "0.58" }
 
 
 [dev-dependencies]
