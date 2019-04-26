@@ -29,10 +29,10 @@ gnuplot                     = { optional = true, version = "0.0" }
 
 
 # gui stuff
-piston                      = { optional = true, version = "0.40" }
-piston2d-graphics           = { optional = true, version = "0.29" }
-pistoncore-glutin_window    = { optional = true, version = "0.52" }
-piston2d-opengl_graphics    = { optional = true, version = "0.58" }
+piston                      = { optional = true, version = "0.42" }
+piston2d-graphics           = { optional = true, version = "0.30" }
+pistoncore-glutin_window    = { optional = true, version = "0.54" }
+piston2d-opengl_graphics    = { optional = true, version = "0.59" }
 
 
 [dev-dependencies]
