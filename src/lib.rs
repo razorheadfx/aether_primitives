@@ -1,3 +1,6 @@
+// required by pool; enables destructuring of std::mem::ManuallyDrop containers
+#![feature(manually_drop_take)]
+
 extern crate assert_approx_eq;
 extern crate csv;
 extern crate num_complex;
@@ -71,6 +74,9 @@ pub mod noise;
 /// Helpers to instantiate thread-based processing pipelines
 /// built atop of std::syn::mpsc channels
 pub mod pipeline;
+
+/// Object pool for expensive objects which can be shared across threads
+pub mod pool;
 
 /// A minimal, OpenGl accelerated UI based on [piston](https://github.com/pistondevelopers/piston)  
 /// Supports waterfall, time domain and eye diagrams
