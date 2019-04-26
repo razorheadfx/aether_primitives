@@ -23,8 +23,8 @@ pub fn interpolate(src: &[cf32], dst: &mut Vec<cf32>, n_between: usize) {
     dst.push(*src.last().unwrap());
 }
 
-/// downsample samples from ```src``` into ```dst``` with the ratio given by ```src.len()/dst.len()```
-/// TODO: doc
+/// downsample samples from ```src``` into ```dst```
+/// with the ratio given by ```src.len()/dst.len()```
 pub fn downsample<T>(src: &[T], dst: &mut [T])
 where
     T: Copy,
@@ -41,8 +41,11 @@ where
         .for_each(|(i, c)| *c = src[i * dec]);
 }
 
-/// uses the nightly step_by adaptor on iterator
-/// TODO: doc
+/// downsample samples from ```src``` into ```dst```
+/// with the ratio given by ```src.len()/dst.len()```  
+/// This implementation uses the step_by adaptor on iterator.  
+/// Current benchmarks show this is ~1/3 slower than
+/// the enumerate version (30720 to 1024; 1,27us vs 1,65us)
 pub fn downsample_sb<T>(src: &[T], dst: &mut [T])
 where
     T: Copy,
