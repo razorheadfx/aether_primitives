@@ -1,3 +1,5 @@
+extern crate gnuplot;
+
 use crate::cf32;
 use gnuplot::{
     AlignType, AutoOption, AxesCommon, Caption, Color, Coordinate, DashType, Figure, LegendOption,

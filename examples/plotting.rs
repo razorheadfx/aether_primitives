@@ -7,24 +7,26 @@ fn main() {
 
     #[cfg(feature = "plot")]
     {
-        use aether_primitives::channel::noise;
+        use aether_primitives::noise;
         use aether_primitives::plot;
+
+        let mut noise = noise::new(1.0, 815);
 
         {
             println!("Generating noise and plotting constellation");
-            let noise = noise::make(2048, 1.0);
+            let noise: Vec<_> = noise.iter().take(2048).collect();
             let no_file_out = None;
             plot::constellation(&noise, "2048 Noise Values", no_file_out);
         }
         {
             println!("Generating noise and plotting time signal");
-            let noise = noise::make(200, 1.0);
+            let noise: Vec<_> = noise.iter().take(200).collect();
             let no_file_out = None;
             plot::time(&noise, "200 Noise Values", no_file_out);
         }
         {
             println!("Generating noise and plotting comparison");
-            let noise = noise::make(400, 1.0);
+            let noise: Vec<_> = noise.iter().take(400).collect();
             let no_file_out = None;
             plot::compare(
                 &noise[..200],
@@ -38,7 +40,7 @@ fn main() {
         {
             println!("Generating noise and waterfall");
             let fft_len = 2048;
-            let noise = noise::make(fft_len * 500, 1.0);
+            let noise: Vec<_> = noise.iter().take(fft_len * 500).collect();
             let use_db = true;
             let no_file_out = None;
             plot::waterfall(

@@ -1,6 +1,7 @@
 use std::convert::{From, Into};
 
-/// Decibel convert from DB and into DB
+/// Convert values from Decibel (dB) and back
+/// Stores the value in dB
 /// # Example
 /// ```
 /// use aether_primitives::util::DB;
@@ -11,7 +12,7 @@ use std::convert::{From, Into};
 /// assert_eq!(db.db(), 20f64);
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct DB(f64);
+pub struct DB(pub f64);
 
 impl<T> From<T> for DB
 where
