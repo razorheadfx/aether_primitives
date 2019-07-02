@@ -1,11 +1,19 @@
-# aether-primitives - a software radio framework powered by rust
+# aether-primitives - a rusty software-defined radio toolbox
 [![Latest Version](https://img.shields.io/crates/v/aether_primitives.svg)](https://crates.io/crates/aether_primitives)
 [![Documentation](https://docs.rs/aether_primitives/badge.svg)](https://docs.rs/crate/aether_primitives)
 ![License](https://img.shields.io/crates/l/aether_primitives.svg)
 [![Build Status](https://travis-ci.org/razorheadfx/aether_primitives.svg?branch=master)](https://travis-ci.org/razorheadfx/aether_primitives)
 [![Dependency Status](https://deps.rs/repo/github/razorheadfx/aether_primitives/status.svg)](https://deps.rs/repo/github/razorheadfx/aether_primitives)
 ## What is aether?
-Aether is designed to ease development of SDR applications by providing convenient (low-level) building blocks for common operations.  
+Aether is designed to ease development of SDR applications by providing convenient (low-level) building blocks for common SDR signal processing operations.  
+
+## Design Decisions
+- Should come with batteries included, but should not get in the way
+- Modular
+    - Convenience Traits should be implementable for your own objects
+    - Feature gating of non-essential components (i.e. swap out the FFT impl by implementing a trait)
+- The base versions will be written in idiomatic rust  
+- Optimisations and unsafe speedups will be hidden behind feature flags  
 
 ## Examples
 Core operations are implemented in the form of the VecOps trait implemented for Vecs/Slices of the C compatible [num::Complex<f32>](https://docs.rs/num-complex/latest/num_complex/type.Complex32.html) (```cf32``` for short).  
@@ -35,14 +43,6 @@ v.vec_div(&twos)
 assert_evm!(&v, &correct, -80.0); 
 ```
 
-## Design Decisions
-* The base versions will be written in idiomatic rust  
-* Optimisations and unsafe speedups will be hidden behind feature flags  
-* The actual version of the num-traits and num-complex crates are not pinned by aether because multiple concurrent versions of the same trait are incompatible.  
-This can cause type level incompatibility if there are dependencies which expose different versions of the same type to the user.
-Hence the version is not pinned as cargo will usually try to build the same version of num-complex and num-traits for the biggest set of dependencies (within their version constraints), thus reducing the probability of this happening.
-* For performance reasons the use of dynamic dispatch (Trait objects ```dyn <Trait>```) will be avoided.
-
 ## Implemented functionality
 - Macros:
     - assert_evm!: check if elements of both vectors have a certain error vector magnitude relative to each other (given in dBm)
@@ -51,20 +51,27 @@ Hence the version is not pinned as cargo will usually try to build the same vers
     . Mirror: Swap elements around mid of vector (for even length vectros)
     - Zero entire vector, copy elements over from another vector
     - FEATURE: Perform (i)FFTs using new or existing fourier transform instance (enabled via ```fft_chfft```)
-- Sequence: Helpers for binary pseudo-random sequence generation (M-Sequences)
+- Sequence: Helpers for binary pseudo-random sequence generation (esp. M-Sequences)
     - expand: Expand a seed value into an initialisation vector for a Pseudo-random sequence
     - generate: Generate a pseudo random sequence
 - Sampling
     - linear interpolation
     - even downsampling
-- FFT: FEATURE ```fft_chfft```
+- Modulation
+    - Generic BPSK and QPSK modulation
+    - Hard Demodulator
+- Pool
+    - Generic, thread-safe object pool
+- FFT: DEFAULT FEATURE ```fft_rustfft```
     - perform fast fourier transforms (forward/backward) on slices/vecs of cf32 with different scaling factors
     - Supported fft implementations: [chfft](https://github.com/chalharu/chfft)
 - File
     - binary file writing and reading for arbitrary structs
     - csv file writing and reading for arbitrary structs
-- Channel
-    - Noise generation
+- Noise
+    - AWGN generator
+- Pipeline
+    - Multithreaded processing pipelines
 - Plot: FEATURE ```plot```; requires an installed version of ```gnuplot```
     - Constellation diagram
     - Time sequence plot
@@ -73,25 +80,18 @@ Hence the version is not pinned as cargo will usually try to build the same vers
 - Utils
     - Conversion from and to dB
 
-- Benches: benchmarks for most operations in aether using the criterion.rs framework
+- Benches: benchmarks for most operations in aether using criterion.rs framework
     - downsampling, interpolation, fft
 
 ## TODO
-- [ ] Pull out choice of FFT ([RustFFT](https://github.com/awelkie/RustFFT) vs [chfft](https://github.com/chalharu/chfft)) via wrappers
-    - [x] Implement wrapper for chfft
-    - [ ] Implement wrapper for RustFFT
-         - Issue: cf32 incompatible with RustFFTs version of cf32 (maybe add some shady casts since the structs are the same)
 - [ ] Add vec_align! macro to create vecs aligned for SIMD instructions
 - [ ] Ungrowable Vecs
     - maybe derefs to slice for convenience
 - [ ] Add VecStats (f32,cf32)
     - Min(index),Max(index),Mean(index),Power
 - [ ] Add VecOps Features
-    - [x] FFTs : vec_fft,vec_ifft, vec_rifft, vec_rfft, vec_rifft; rifft/rfft reuse an existing instance of fft::Cfft currently supported by building with ```fft_chfft``` enabled.  
     - [ ] Feature: use [faster](https://github.com/AdamNiederer/faster) once it works on stable again
-    - [ ] Feature: use [VOLK](https://libvolk.org) for ops
-        - Add tests to ensure generated code is correctly aligned - should be ensured since cf32 (2x4 bytes) is 8 bytes. VOLK [prefers](https://libvolk.org/doxygen/concepts_terms_and_techniques.html) 32byte alignment /libfftw [prefers](http://www.fftw.org/fftw3_doc/SIMD-alignment-and-fftw_005fmalloc.html) 16 byte alignment
-        - must also hook into the vec_align macro
+    - Add tests to ensure generated code is correctly aligned - should be ensured since cf32 (2x4 bytes) is 8 bytes. VOLK [prefers](https://libvolk.org/doxygen/concepts_terms_and_techniques.html) 32byte alignment /libfftw [prefers](http://www.fftw.org/fftw3_doc/SIMD-alignment-and-fftw_005fmalloc.html) 16 byte alignment
 - [ ] Add Correlation by Freq. Domain Convolution
 - [ ] Add FIR
 

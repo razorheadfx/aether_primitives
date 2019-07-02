@@ -19,7 +19,9 @@ num-complex                 = { version = "0.2", features = ["serde"] }
 csv                         = "1.0"
 # f32/f64 equality assertion
 assert_approx_eq            = "1.1"
-rand                        = "0.6"
+
+rand                        = "0.7"
+rand_distr                  = "0.2"
 
 # the default fft
 rustfft                     = { optional = true, version = "3.0" }

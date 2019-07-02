@@ -14,5 +14,4 @@ env:
   matrix:
     - FEATURES=''
     - FEATURES='fft_rustfft'
-    - FEATURES='gui,fft_rustfft'
     - FEATURES='gnuplot,fft_rustfft'

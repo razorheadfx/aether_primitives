@@ -1,7 +1,7 @@
 use crate::cf32;
-use rand::distributions::Normal;
 use rand::prelude::*;
 use rand::SeedableRng;
+use rand_distr::Normal;
 
 const DEFAULT_RNG_SEED: u64 = 815;
 
@@ -20,7 +20,7 @@ pub fn new(power: f32, seed: u64) -> Awgn {
 pub struct Awgn {
     pub power: f32,
     pub rng: StdRng,
-    pub dist: Normal,
+    pub dist: Normal<f64>,
     scale: f32,
 }
 
@@ -30,7 +30,7 @@ impl Awgn {
         Awgn {
             power,
             rng: SeedableRng::seed_from_u64(seed),
-            dist: Normal::new(0f64, 1f64),
+            dist: Normal::new(0f64, 1f64).expect("Failed to create distribution"),
             scale: power.sqrt(),
         }
     }
