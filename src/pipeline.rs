@@ -54,7 +54,7 @@ where
     I: Send + 'static,
     O: Send + 'static,
     F: Send + 'static + FnMut(I) -> O,
-{   
+{
     // create a new channel
     let (o_tx, o) = channel();
     let name = name.to_string();
@@ -67,7 +67,7 @@ where
         let mut n = 0u64;
         let mut last_report = SystemTime::now();
         let mut time_active = Duration::from_secs(0);
-        while let Ok(i) = input.recv(){
+        while let Ok(i) = input.recv() {
             let started_at = SystemTime::now();
 
             // perform the operation
@@ -82,7 +82,9 @@ where
             let done_by = SystemTime::now();
             // update the number of things processed
             n += 1;
-            time_active += done_by.duration_since(started_at).unwrap_or(Duration::from_secs(0));
+            time_active += done_by
+                .duration_since(started_at)
+                .unwrap_or(Duration::from_secs(0));
 
             // report every second
             let dur = done_by

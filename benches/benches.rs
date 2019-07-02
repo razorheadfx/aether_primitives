@@ -66,45 +66,106 @@ fn interpolate(c: &mut Criterion) {
     );
 }
 
-/// downsample by 30
-fn downsample_30720_to_1024(c: &mut Criterion) {
-    c.bench_function("sampling::downsample 30720 to 1024", |b| {
+/// downsample by 30; compares both implementations
+/// one using the iterator::step_by adaptor and the other
+/// a naive implementation
+fn downsample(c: &mut Criterion) {
+    c.bench_function_over_inputs(
+        "sampling::downsample",
+        |b: &mut criterion::Bencher, (from, to): &(usize, usize)| {
+            b.iter_with_setup(
+                || {
+                    let src = vec![cf32::new(1.0, 1.0); *from];
+                    let dst = vec![cf32::default(); *to];
+                    (src, dst)
+                },
+                |(src, mut dst)| {
+                    sampling::downsample(&src, &mut dst);
+                },
+            );
+        },
+        vec![(30720usize, 1024usize), (8096, 512)],
+    );
+
+    c.bench_function_over_inputs(
+        "sampling::downsample step_by",
+        |b: &mut criterion::Bencher, (from, to): &(usize, usize)| {
+            b.iter_with_setup(
+                || {
+                    let src = vec![cf32::new(1.0, 1.0); *from];
+                    let dst = vec![cf32::default(); *to];
+                    (src, dst)
+                },
+                |(src, mut dst)| {
+                    sampling::downsample_sb(&src, &mut dst);
+                },
+            );
+        },
+        vec![(30720usize, 1024usize), (8096, 512)],
+    );
+}
+
+/// tracks performance of zipping iters vs explicit loops
+fn zipped_iter_vs_for(c: &mut Criterion) {
+    // just zip it
+    // inner bounds check
+    c.bench_function("iterator::zip", |b| {
         b.iter_with_setup(
             || {
-                let src = vec![cf32::new(1.0, 1.0); 30720];
+                let src = vec![cf32::new(1.0, 1.0); 2340];
                 let dst = vec![cf32::default(); 1024];
                 (src, dst)
             },
             |(src, mut dst)| {
-                sampling::downsample(&src, &mut dst);
+                dst.iter_mut()
+                    .zip(src.iter())
+                    .for_each(|(c, s)| *c = *c * s);
             },
         );
     });
-}
-
-/// downsample by 30 using the step_by implementation
-fn downsample_step_by_30720_to_1024(c: &mut Criterion) {
-    c.bench_function("sampling::downsample_sb 30720 to 1024", |b| {
+    // with bounds check
+    c.bench_function("iterator::slice, zip", |b| {
         b.iter_with_setup(
             || {
-                let src = vec![cf32::new(1.0, 1.0); 30720];
+                let src = vec![cf32::new(1.0, 1.0); 2340];
                 let dst = vec![cf32::default(); 1024];
                 (src, dst)
             },
             |(src, mut dst)| {
-                sampling::downsample_sb(&src, &mut dst);
+                let min = usize::min(src.len(), dst.len());
+                dst[..min]
+                    .iter_mut()
+                    .zip(src[..min].iter())
+                    .for_each(|(c, s)| *c = *c * s);
+            },
+        );
+    });
+
+    // loop
+    c.bench_function("iterator::for", |b| {
+        b.iter_with_setup(
+            || {
+                let src = vec![cf32::new(1.0, 1.0); 2340];
+                let dst = vec![cf32::default(); 1024];
+                (src, dst)
+            },
+            |(src, mut dst)| {
+                let min = usize::min(src.len(), dst.len());
+                for i in 0..min {
+                    dst[i] = dst[i] * src[i];
+                }
             },
         );
     });
 }
 
 criterion_group!(vecops, mul, clone, scale);
-criterion_group!(
-    sampling,
-    interpolate,
-    downsample_30720_to_1024,
-    downsample_step_by_30720_to_1024
-);
+criterion_group!(sampling, interpolate, downsample,);
+
+/// exploratory performance checks
+/// not usually included by default
+
+criterion_group!(performance_checks, zipped_iter_vs_for, downsample,);
 
 //////////////---------------ffts
 #[cfg(feature = "fft")]

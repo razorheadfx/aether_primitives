@@ -2,6 +2,8 @@
 [![Latest Version](https://img.shields.io/crates/v/aether_primitives.svg)](https://crates.io/crates/aether_primitives)
 [![Documentation](https://docs.rs/aether_primitives/badge.svg)](https://docs.rs/crate/aether_primitives)
 ![License](https://img.shields.io/crates/l/aether_primitives.svg)
+[![Build Status](https://travis-ci.org/razorheadfx/aether_primitives.svg?branch=master)](https://travis-ci.org/razorheadfx/aether_primitives)
+[![Dependency Status](https://deps.rs/repo/github/razorheadfx/aether_primitives/status.svg)](https://deps.rs/repo/github/razorheadfx/aether_primitives)
 ## What is aether?
 Aether is designed to ease development of SDR applications by providing convenient (low-level) building blocks for common operations.  
 

@@ -1,12 +1,20 @@
+// required by pool; enables destructuring of std::mem::ManuallyDrop containers
+#![feature(manually_drop_take)]
+
 extern crate assert_approx_eq;
 extern crate csv;
 extern crate num_complex;
 
 /// Shorthand for Complex<f32>
 /// Default sample type
-/// This type is repr(C), thus 2 f32s back-to-back equivalent to [f32;2]
+/// This type is repr(C), thus 2 f32s back-to-back equivalent to [f32;2] on most platforms
 #[allow(non_camel_case_types)]
 pub type cf32 = num_complex::Complex32;
+
+/// Shorthand for Complex<f64>
+/// This type is repr(C), thus 2 f32s back-to-back equivalent to [f64;2] on most platforms
+#[allow(non_camel_case_types)]
+pub type cf64 = num_complex::Complex32;
 
 /// Error Vector Magnitude assertion
 /// Checks each element and panics if an element in the ```actual```
@@ -40,13 +48,6 @@ macro_rules! assert_evm {
     };
 }
 
-#[macro_export]
-macro_rules! vec_align {
-    [$init:expr; $len:expr] => {
-        unimplemented!()
-    }
-}
-
 /// Neat operations on vectors and slices
 pub mod vecops;
 
@@ -71,6 +72,9 @@ pub mod noise;
 /// Helpers to instantiate thread-based processing pipelines
 /// built atop of std::syn::mpsc channels
 pub mod pipeline;
+
+/// Object pool for expensive objects which can be shared across threads
+pub mod pool;
 
 /// Uses ```gnuplot``` to fork off threads to plot given data.  
 /// If no filename is given to plot functions gnuplot will open
@@ -117,11 +121,6 @@ mod test {
         let act = vec![cf32::new(1f32, 0f32), cf32::new(0.98f32, 0f32)];
         // error should be <= 0.0
         assert_evm!(act, refr, -20);
-    }
-
-    // TODO: impl
-    fn _vec_align() {
-        let _v = vec_align![cf32::default(); 2048];
     }
 
 }
