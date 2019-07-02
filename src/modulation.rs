@@ -94,7 +94,7 @@ pub trait Modulation {
     }
 
     #[inline(always)]
-    fn modulate_into(&self, input: &[u8], output: &mut Iterator<Item = &mut cf32>) {
+    fn modulate_into<'a>(&self, input: &[u8], output: &mut impl Iterator<Item = &'a mut cf32>) {
         input
             .chunks(Self::BITS_PER_SYMBOL)
             .map(Self::index)
@@ -103,10 +103,10 @@ pub trait Modulation {
             .for_each(|(s, out)| *out = s);
     }
 
-    fn demod_naive(
+    fn demod_naive<'a>(
         &self,
-        symbols: &mut Iterator<Item = &cf32>,
-        mut output: &mut Iterator<Item = &mut u8>,
+        symbols: &mut impl Iterator<Item = &'a cf32>,
+        mut output: &mut impl Iterator<Item = &'a mut u8>,
     ) {
         for symbol in symbols {
             let (idx, _symb) = (0..Self::BITS_PER_SYMBOL * 2)
