@@ -54,7 +54,8 @@ where
     I: Send + 'static,
     O: Send + 'static,
     F: Send + 'static + FnMut(I) -> O,
-{
+{   
+    // create a new channel
     let (o_tx, o) = channel();
     let name = name.to_string();
     let mut op = op;
@@ -65,11 +66,8 @@ where
         let mut n = 0u64;
         let mut last_report = SystemTime::now();
         let mut time_active = Duration::from_secs(0);
-        loop {
-            let (i, s) = match input.recv() {
-                Ok(i) => (i, SystemTime::now()),
-                _ => break,
-            };
+        while let Ok(i) = input.recv(){
+            let s = SystemTime::now();
 
             // perform the operation
             let v = op(i);
