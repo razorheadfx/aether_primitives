@@ -133,9 +133,9 @@ mod ru {
 
     pub struct Cfft {
         // unfortunately we need to use a smart pointer here
-        fwd: Arc<FFT<f32>>,
+        fwd: Arc<dyn FFT<f32>>,
         // unfortunately we need to use a smart pointer here
-        bwd: Arc<FFT<f32>>,
+        bwd: Arc<dyn FFT<f32>>,
         /// this this is used as an internal buffer in order to preserve input
         /// vector is twice the length so we can support temp transform variants tfwd/tbwd.
         tmp: Vec<cf32>,
