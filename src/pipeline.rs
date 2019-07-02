@@ -58,6 +58,7 @@ where
     // create a new channel
     let (o_tx, o) = channel();
     let name = name.to_string();
+    // store the operation
     let mut op = op;
 
     thread::spawn(move || {
@@ -67,7 +68,7 @@ where
         let mut last_report = SystemTime::now();
         let mut time_active = Duration::from_secs(0);
         while let Ok(i) = input.recv(){
-            let s = SystemTime::now();
+            let started_at = SystemTime::now();
 
             // perform the operation
             let v = op(i);
@@ -78,20 +79,20 @@ where
             };
 
             // log end time
-            let e = SystemTime::now();
+            let done_by = SystemTime::now();
             // update the number of things processed
             n += 1;
-            time_active += e.duration_since(s).unwrap_or(Duration::from_secs(0));
+            time_active += done_by.duration_since(started_at).unwrap_or(Duration::from_secs(0));
 
             // report every second
-            let dur = e
+            let dur = done_by
                 .duration_since(last_report)
                 .unwrap_or(Duration::from_secs(0));
             if dur >= Duration::from_secs(1) {
                 // ms precision is ok
-                let dur_in_ms = (1000 * dur.as_secs()) as f64 + dur.subsec_millis() as f64;
+                let dur_in_ms = (1000 * dur.as_secs()) as f64 + f64::from(dur.subsec_millis());
                 let active_in_ms =
-                    (1000 * time_active.as_secs()) as f64 + time_active.subsec_millis() as f64;
+                    (1000 * time_active.as_secs()) as f64 + f64::from(time_active.subsec_millis());
                 let ops_per_s = n as f64 / dur_in_ms * 1000.0;
                 let utilisation = active_in_ms / dur_in_ms * 100.0;
                 println!(
@@ -105,7 +106,7 @@ where
 
                 // reset our stats
                 // assumes producing and printing the report requires no time
-                last_report = e;
+                last_report = done_by;
                 n = 0u64;
                 time_active = Duration::from_secs(0);
             }
