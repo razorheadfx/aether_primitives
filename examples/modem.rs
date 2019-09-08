@@ -9,7 +9,7 @@ fn main() {
 
 #[cfg(feature = "plot")]
 fn main() {
-    use aeth::{modulation, modulation::Modulation, noise, plot};
+    use aeth::{modulation, modulation::Modulation, noise, util::plot};
     use rand::prelude::*;
 
     let m = modulation::qpsk();
@@ -28,7 +28,7 @@ fn main() {
 
     let mut bits = vec![0u8; 100];
 
-    m.demod_naive(&mut output.iter(), &mut bits.iter_mut());
+    m.demod_naive(&mut output.iter(), &mut bits);
     assert_eq!(b, bits);
 
     plot::time(&output, "m", None);
