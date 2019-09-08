@@ -8,7 +8,7 @@ fn main() {
     #[cfg(feature = "plot")]
     {
         use aether_primitives::noise;
-        use aether_primitives::plot;
+        use aether_primitives::util::plot;
 
         let mut noise = noise::new(1.0, 815);
 
