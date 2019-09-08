@@ -461,5 +461,4 @@ mod test {
             .vec_rifft(&mut fft, Scale::SN);
         assert_evm!(c, v);
     }
-
 }

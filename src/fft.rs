@@ -233,7 +233,6 @@ mod ru {
             self.len
         }
     }
-
 }
 
 #[cfg(test)]

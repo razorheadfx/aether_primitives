@@ -66,5 +66,4 @@ mod test {
 
         assert_eq!(seq, vec![1, 0, 1, 1, 0, 1]);
     }
-
 }

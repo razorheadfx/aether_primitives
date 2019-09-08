@@ -70,7 +70,7 @@ fn main() {
                 };
 
                 v.extend((0..buffsize).map(|x| -1.0 * x as f32));
-                
+
                 match i.send(v) {
                     Err(e) => {
                         println!("{:?}", e);
@@ -80,14 +80,14 @@ fn main() {
                 };
                 // thread::sleep(Duration::from_micros(500));
             }
-            println!("Fed Elements {}",tx_ed);
+            println!("Fed Elements {}", tx_ed);
             tx_ed
         });
 
         while let Ok(_ov) = o.recv() {
             rx_ed += 1;
         }
-        println!("RXed: {}",rx_ed);
+        println!("RXed: {}", rx_ed);
         handle.join().unwrap();
     }
 
@@ -147,7 +147,7 @@ fn main() {
                 let mut v = p.take_or_make();
 
                 v.extend((0..buffsize).map(|x| -1.0 * x as f32));
-                
+
                 match i.send(v) {
                     Err(e) => {
                         println!("{:?}", e);
@@ -158,17 +158,16 @@ fn main() {
                 // thread::sleep(Duration::from_micros(500));
             }
             println!("Feeder down");
-            println!("Fed: {}",tx_ed);
+            println!("Fed: {}", tx_ed);
             tx_ed
         });
 
         while let Ok(_ov) = o.recv() {
             rx_ed += 1;
         }
-        println!("RXed: {}",rx_ed);
+        println!("RXed: {}", rx_ed);
         handle.join().unwrap();
     }
-
 
     fn unpooled() {
         let buffsize = args()
@@ -208,7 +207,7 @@ fn main() {
                 // load on the allocator
                 // In general: Input stages should be rate limited and if any of the downstream stages
                 // shows 100% load you should consider splitting the load
-                let mut v = vec![0.0f32;buffsize];
+                let mut v = vec![0.0f32; buffsize];
                 v.clear();
                 v.extend((0..buffsize).map(|x| -1.0 * x as f32));
 
@@ -222,13 +221,13 @@ fn main() {
                 // thread::sleep(Duration::from_micros(500));
             }
             println!("Feeder down");
-            println!("Fed Elements: {}",tx_ed);
+            println!("Fed Elements: {}", tx_ed);
             tx_ed
         });
         while let Ok(_ov) = o.recv() {
             rx_ed += 1;
         }
-        println!("RXed: {}",rx_ed);
+        println!("RXed: {}", rx_ed);
         handle.join().unwrap();
     }
 
