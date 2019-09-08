@@ -52,6 +52,9 @@ macro_rules! assert_evm {
 /// Fourier Transform-related
 pub mod fft;
 
+/// FIR: Finite Impulse Response Filters
+pub mod fir;
+
 /// Conversion of bits into to Q/I symbols and back
 pub mod modulation;
 
