@@ -1,5 +1,14 @@
 use std::convert::{From, Into};
 
+/// Uses ```gnuplot``` to fork off threads to plot given data.  
+/// If no filename is given to plot functions gnuplot will open
+/// a window to display the plot.
+#[cfg(feature = "plot")]
+pub mod plot;
+
+/// Operations on files of samples
+pub mod file;
+
 /// Convert values from Decibel (dB) and back
 /// Stores the value in dB
 /// # Example
@@ -54,5 +63,4 @@ mod test {
         assert_approx_eq!(DB::from(100f64).db(), 20f64);
         assert_approx_eq!(DB::from(10f64.recip()).db(), -10f64);
     }
-
 }

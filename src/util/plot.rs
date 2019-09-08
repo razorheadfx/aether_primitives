@@ -37,7 +37,6 @@ pub fn waterfall(symbols: &[cf32], fft_len: usize, use_db: bool, title: &str, fi
     use crate::fft::{Cfft, Scale};
     use crate::util::DB;
     use crate::vecops::VecOps;
-    use gnuplot::AutoOption;
 
     let mut fg = Figure::new();
 

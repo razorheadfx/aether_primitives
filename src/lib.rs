@@ -63,9 +63,6 @@ pub mod sequence;
 /// Conversion of bits into to Q/I symbols and back
 pub mod modulation;
 
-/// Operations on files of samples
-pub mod file;
-
 /// Helpers for generating AWGN noise
 pub mod noise;
 
@@ -75,12 +72,6 @@ pub mod pipeline;
 
 /// Object pool for expensive objects which can be shared across threads
 pub mod pool;
-
-/// Uses ```gnuplot``` to fork off threads to plot given data.  
-/// If no filename is given to plot functions gnuplot will open
-/// a window to display the plot.
-#[cfg(feature = "plot")]
-pub mod plot;
 
 /// Miscelaneous Helpers
 pub mod util;
@@ -122,5 +113,4 @@ mod test {
         // error should be <= 0.0
         assert_evm!(act, refr, -20);
     }
-
 }

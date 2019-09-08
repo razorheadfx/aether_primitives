@@ -131,7 +131,7 @@ mod test {
     #[cfg(target_os = "linux")]
     #[test]
     fn test_binary_writer_and_reader() {
-        use crate::{cf32, file};
+        use crate::{cf32, util::file};
         use std::fs;
         use std::mem;
         use std::path::PathBuf;
@@ -173,7 +173,7 @@ mod test {
     #[cfg(target_os = "linux")]
     #[test]
     fn test_csv_writer_and_reader() {
-        use crate::{cf32, file};
+        use crate::{cf32, util::file};
         use std::fs;
         use std::path::PathBuf;
 
