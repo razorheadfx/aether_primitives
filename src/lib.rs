@@ -48,7 +48,6 @@ macro_rules! assert_evm {
     };
 }
 
-
 /// Fourier Transform-related
 pub mod fft;
 
@@ -79,7 +78,6 @@ pub mod util;
 
 /// Neat operations on vectors and slices
 pub mod vecops;
-
 
 #[cfg(test)]
 mod test {
