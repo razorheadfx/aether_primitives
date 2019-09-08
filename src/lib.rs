@@ -14,7 +14,7 @@ pub type cf32 = num_complex::Complex32;
 /// Shorthand for Complex<f64>
 /// This type is repr(C), thus 2 f32s back-to-back equivalent to [f64;2] on most platforms
 #[allow(non_camel_case_types)]
-pub type cf64 = num_complex::Complex32;
+pub type cf64 = num_complex::Complex64;
 
 /// Error Vector Magnitude assertion
 /// Checks each element and panics if an element in the ```actual```
@@ -48,17 +48,9 @@ macro_rules! assert_evm {
     };
 }
 
-/// Neat operations on vectors and slices
-pub mod vecops;
 
 /// Fourier Transform-related
 pub mod fft;
-
-/// Resampling (up/down), Interpolation
-pub mod sampling;
-
-/// Pseudo-Random Sequence Generation
-pub mod sequence;
 
 /// Conversion of bits into to Q/I symbols and back
 pub mod modulation;
@@ -73,8 +65,18 @@ pub mod pipeline;
 /// Object pool for expensive objects which can be shared across threads
 pub mod pool;
 
+/// Resampling (up/down), Interpolation
+pub mod sampling;
+
+/// Pseudo-Random Sequence Generation
+pub mod sequence;
+
 /// Miscelaneous Helpers
 pub mod util;
+
+/// Neat operations on vectors and slices
+pub mod vecops;
+
 
 #[cfg(test)]
 mod test {
