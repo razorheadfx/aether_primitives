@@ -4,19 +4,10 @@ extern crate rand;
 
 use criterion::Criterion;
 
-#[cfg(feature = "fft")]
 criterion_main!(
     vecops::vecops,
     sampling::sampling,
     fft::fft,
-    modulation::modulation,
-    experiment_downsample
-);
-
-#[cfg(not(feature = "fft"))]
-criterion_main!(
-    vecops::vecops,
-    sampling::sampling,
     modulation::modulation,
     experiment_downsample
 );
@@ -289,22 +280,17 @@ mod modulation {
     }
 }
 
-#[cfg(feature = "fft")]
 mod fft {
     use super::prelude::*;
-    use aether_primitives::fft::{Cfft, Fft, Scale};
 
-    #[cfg(feature = "fft")]
-    criterion_group!(
-        fft,
-        fft::inplace_ffts,
-        fft::copy_ffts,
-        fft::inplace_correlator
-    );
+    criterion_group!(fft, inplace_ffts, copy_ffts, inplace_correlator);
 
     pub fn inplace_ffts(_c: &mut Criterion) {
         #[cfg(feature = "fft")]
         {
+            use super::prelude::*;
+            use aether_primitives::fft::{Cfft, Fft, Scale};
+
             _c.bench_function_over_inputs(
                 "fft inplace fwd",
                 |b: &mut criterion::Bencher, len: &usize| {
@@ -348,6 +334,9 @@ mod fft {
     pub fn copy_ffts(_c: &mut Criterion) {
         #[cfg(feature = "fft")]
         {
+            use super::prelude::*;
+            use aether_primitives::fft::{Cfft, Fft, Scale};
+
             _c.bench_function_over_inputs(
                 "fft copy fwd",
                 |b: &mut criterion::Bencher, len: &usize| {
@@ -393,6 +382,9 @@ mod fft {
     pub fn inplace_correlator(_c: &mut Criterion) {
         #[cfg(feature = "fft")]
         {
+            use super::prelude::*;
+            use aether_primitives::fft::{Cfft, Scale};
+
             _c.bench_function_over_inputs(
                 "correlator inplace",
                 |b: &mut criterion::Bencher, len: &usize| {
